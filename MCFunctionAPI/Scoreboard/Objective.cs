@@ -36,6 +36,11 @@ namespace MCFunctionAPI.Scoreboard
             FunctionWriter.Write($"scoreboard objectives add {this} {criterion} {displayName}");
         }
 
+        public void Dummy()
+        {
+            Create("dummy");
+        }
+
         public void Remove()
         {
             FunctionWriter.Write("scoreboard objectives remove " + this);

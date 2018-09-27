@@ -63,6 +63,7 @@
     <Compile Include="BossBar\BossStyle.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="CommandWrapper.cs" />
+    <Compile Include="FunctionContainer.cs" />
     <Compile Include="Datapack.cs" />
     <Compile Include="Difficulty.cs" />
     <Compile Include="Dimension.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="FunctionWriter.cs" />
     <Compile Include="GameRule.cs" />
     <Compile Include="IDataContainer.cs" />
-    <Compile Include="FunctionContainer.cs" />
     <Compile Include="IInventoryHolder.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="MyFunctions.cs" />

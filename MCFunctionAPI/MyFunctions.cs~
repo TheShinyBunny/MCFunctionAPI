@@ -16,9 +16,11 @@ namespace MCFunctionAPI
 
         public void Setup()
         {
+<<<<<<< HEAD
             ObjectiveBoolean.Setup();
             MyBool = "booleantest";
             MyBool.Create();
+=======
             SetWeather(Weather.Clear);
             EntitySelector selector = new EntitySelector("@a") { Level = "1..5", Gamemode = 0 };
             selector.Tags.And("cool");
@@ -29,6 +31,7 @@ namespace MCFunctionAPI
             Clone(Position.Here, "~1 ~1 ~-1", "0 1 0", MaskMode.Filtered.With("diamond_block"));
             Time += 500;
             test.Create("dummy");
+>>>>>>> 0e612999b8900e67dff74416630eea6c2fc7ea46
         }
 
         public void TurnOn()
@@ -41,11 +44,13 @@ namespace MCFunctionAPI
             MyBool.Value = false;
         }
 
+<<<<<<< HEAD
         public void Check()
         {
             execute.If(MyBool).Run.Say("Its working!");
             execute.Unless(MyBool).Run.Say("It was false!");
         }
+=======
             public void BrettyEfes()
             {
                 EntitySelector selector = EntitySelector.Target("@p");
@@ -67,6 +72,7 @@ namespace MCFunctionAPI
                 Console.WriteLine(GetFirstRawCommand((c) => c.Give("diamond")));
 
             }
+>>>>>>> 0e612999b8900e67dff74416630eea6c2fc7ea46
 
         public void Remove()
         {

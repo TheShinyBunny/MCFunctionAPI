@@ -1,6 +1,4 @@
-﻿using MCFunctionAPI.Blocks;
-using MCFunctionAPI.Entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,62 +9,28 @@ namespace MCFunctionAPI
     public class FunctionContainer : CommandWrapper
     {
 
-        public delegate void Function();
+        
 
-        public Execute execute = new Execute();
-
-        private Namespace ns;
-        public Namespace Namespace
+        public IEnumerable<string> GetRawCommands(Execution execution)
         {
-            get => ns;
-            set
-            {
-                if (ns == null)
-                {
-                    ns = value;
-                }
-            }
+            FunctionWriter.GettingRawCommands = true;
+            execution(this);
+            return FunctionWriter.GetRawCommands();
+        }
+
+        public string GetFirstRawCommand(Execution execution)
+        {
+            return GetRawCommands(execution).ToList()[0];
         }
 
 
-        public void WriteRaw(string cmd)
-        {
-            FunctionWriter.Write(cmd);
-        }
+        public Execute execute;
 
-        public void Run(Function func)
+        public FunctionContainer()
         {
-            if (typeof(FunctionContainer).IsAssignableFrom(func.Target.GetType()))
-            {
-                FunctionContainer container = (FunctionContainer)func.Target;
-                Type declarer = func.Method.DeclaringType;
-                Run(Namespace, declarer, func.Method.Name);
-            }
+            execute = new Execute(this);
         }
-
-        public void Run(string path)
-        {
-            if (path.Contains(":"))
-            {
-                FunctionWriter.Write("function " + path);
-            }
-            else
-            {
-                FunctionWriter.Write("function " + Namespace + ":" + path);
-            }
-        }
-
-        public void Run(Namespace ns, Type subFolder, string methodName)
-        {
-            string path = "";
-            while (subFolder.DeclaringType != null)
-            {
-                subFolder = subFolder.DeclaringType;
-                path = subFolder.Name.ToLower() + "/" + path;
-            }
-            path += methodName.ToLower();
-            FunctionWriter.Write("function " + ns + ":" + path);
-        }
+        
 
     }
 }
