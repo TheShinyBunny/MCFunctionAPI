@@ -12,54 +12,34 @@ namespace MCFunctionAPI
     public class MyFunctions : FunctionContainer
     {
 
-        Objective test = "test";
+        private ObjectiveBoolean MyBool;
 
-        public void Loop()
+        public void Setup()
         {
-            SetWeather(Weather.Clear);
-            EntitySelector selector = new EntitySelector("@a") { Level = "1..5", Gamemode = 0 };
-            selector.Tags.And("cool");
-            execute.As(selector).Run.Title(TextComponent.Of(Segment.Text("yoooo")));
-            Run("subfolder/brettyefes");
-            Run(Hello);
-            SetBlock("~ ~ ~5", "stone");
-            Clone(Position.Here, "~1 ~1 ~-1", "0 1 0", MaskMode.Filtered.With("diamond_block"));
-            Time += 500;
-            test.Create("dummy");
+            ObjectiveBoolean.Setup();
+            MyBool = "booleantest";
+            MyBool.Create();
         }
 
-        public void Hello()
+        public void TurnOn()
         {
-            Say("hello world!");
-            test[EntitySelector.AllEntities()] = 5;
-            test["shlomo"] += 20;
-            test["menachem"] = test["yehuda"];
-            test["ShoonyBoony"].Swap(test["SfogAdomAtaShforferet"]);
-
-            EntitySelector selector = new EntitySelector("@e")
-            {
-                Type = "pig",
-                Tags = "cool",
-                Scores = new ScoreSet().Where("foo", 5).Where("bar", "1.."),
-                Team = Team.Any
-            };
+            MyBool.Value = true;   
         }
 
-        public class SubFolder : FunctionContainer
+        public void TurnOff()
         {
+            MyBool.Value = false;
+        }
 
-            public void BrettyEfes()
-            {
-                EntitySelector selector = EntitySelector.Target("@p");
-                selector.Distance = "5..10";
-                selector.Gamemode = 3;
-                selector.Limit = 5;
-                selector.Scores.Where("myObj", 5);
-                execute.As(selector).Align("xz").Anchored(Anchor.Feet).Store(Storage.Result, "Shlomo", "myObj").Run.XP.Levels.Query();
+        public void Check()
+        {
+            execute.If(MyBool).Run.Say("Its working!");
+            execute.Unless(MyBool).Run.Say("It was false!");
+        }
 
-
-            }
-
+        public void Remove()
+        {
+            MyBool.Remove();
         }
 
     }

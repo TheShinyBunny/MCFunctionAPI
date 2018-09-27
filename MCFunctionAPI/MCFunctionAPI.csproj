@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7644E507-6AD4-42D2-B937-32D40CDA06EF}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>MCFunctionAPI</RootNamespace>
     <AssemblyName>MCFunctionAPI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -97,7 +97,9 @@
     <Compile Include="Recipes\ShapelessRecipe.cs" />
     <Compile Include="Recipes\SmeltingRecipe.cs" />
     <Compile Include="ResourceLocation.cs" />
+    <Compile Include="Scoreboard\Integers.cs" />
     <Compile Include="Scoreboard\Objective.cs" />
+    <Compile Include="Scoreboard\ObjectiveBoolean.cs" />
     <Compile Include="Scoreboard\Score.cs" />
     <Compile Include="Scoreboard\ScoreOperator.cs" />
     <Compile Include="Scoreboard\Team.cs" />

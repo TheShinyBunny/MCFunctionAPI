@@ -5,3 +5,10 @@ C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.dll
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.dll
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csprojResolveAssemblyReference.cache
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.pdb
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csprojAssemblyReference.cache
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csproj.CoreCompileInputs.cache
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.pdb
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.exe.config
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.exe
+E:\EranDesk\Turn Off\Code\Workspaces\C#\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.exe

@@ -11,7 +11,7 @@ namespace MCFunctionAPI.Scoreboard
 
         private string name;
 
-        private Objective(string name)
+        protected Objective(string name)
         {
             this.name = name;
         }

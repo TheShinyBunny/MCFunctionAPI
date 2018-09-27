@@ -107,6 +107,11 @@ namespace MCFunctionAPI
             return this + $"if entity {entity}";
         }
 
+        public Execute If(ObjectiveBoolean b)
+        {
+            return this + $"if score {ObjectiveBoolean.DEFAULT_PLAYER} {b} = true {ObjectiveBoolean.BOOL_VALUES}";
+        }
+
         public Execute If(Position pos, Block block)
         {
             return this + $"if block {pos} {block}";
@@ -150,6 +155,11 @@ namespace MCFunctionAPI
         public Execute Unless(string target, Objective targetObj, IntRange matches)
         {
             return this + $"unless score {target} {targetObj} matches {matches}";
+        }
+
+        public Execute Unless(ObjectiveBoolean b)
+        {
+            return this + $"unless score {ObjectiveBoolean.DEFAULT_PLAYER} {b} = true {ObjectiveBoolean.BOOL_VALUES}";
         }
 
         public Execute Store(Storage @in, string name, Objective objective)
