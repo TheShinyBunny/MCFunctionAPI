@@ -48,12 +48,12 @@ namespace MCFunctionAPI.Entity
             }
         }
 
-        public void Effect(Effect effect)
+        public void GiveEffect(Effect effect)
         {
             FunctionWriter.Write($"effect give {this} {effect}");
         }
 
-        public void Effect(Effect effect, uint seconds)
+        public void GiveEffect(Effect effect, uint seconds)
         {
             if (seconds > 1000000)
             {
@@ -62,7 +62,7 @@ namespace MCFunctionAPI.Entity
             FunctionWriter.Write($"effect give {this} {effect} {seconds}");
         }
 
-        public void Effect(Effect effect, uint seconds, uint level)
+        public void GiveEffect(Effect effect, uint seconds, uint level)
         {
             if (seconds > 1000000)
             {
@@ -75,7 +75,7 @@ namespace MCFunctionAPI.Entity
             FunctionWriter.Write($"effect give {this} {effect} {seconds} {level}");
         }
 
-        public void Effect(Effect effect, uint seconds, uint level, bool particles)
+        public void GiveEffect(Effect effect, uint seconds, uint level, bool particles)
         {
             if (seconds > 1000000)
             {
@@ -349,6 +349,7 @@ namespace MCFunctionAPI.Entity
         {
             FunctionWriter.Write("title " + this + " actionbar " + actionbar);
         }
+        
 
     }
 }

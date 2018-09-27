@@ -15,6 +15,8 @@ namespace MCFunctionAPI
         public static Namespace Namespace;
         private static List<string> Lines = new List<string>();
         private static string CurrentPath;
+        public static bool GettingRawCommands;
+        private static List<string> RawLines = new List<string>();
 
         public static void Write(string cmd)
         {
@@ -27,7 +29,14 @@ namespace MCFunctionAPI
                 return;
             }
             Console.WriteLine($"[{CurrentPath}] {cmd}");
-            Lines.Add(cmd);
+            if (GettingRawCommands)
+            {
+                RawLines.Add(cmd);
+            }
+            else
+            {
+                Lines.Add(cmd);
+            }
         }
 
         public static void GenerateFunctions(Namespace ns, FunctionContainer container)
@@ -40,6 +49,7 @@ namespace MCFunctionAPI
         public static void CompileRecursive(FunctionContainer c, string path)
         {
             c.Namespace = Namespace;
+            Console.WriteLine("compiling " + Namespace + ": " + path);
             foreach (var m in c.GetType().GetMethods())
             {
                 if (m.DeclaringType == c.GetType())
@@ -65,6 +75,17 @@ namespace MCFunctionAPI
             m.Invoke(c,null);
             Directory.CreateDirectory(Namespace.Path + "/functions" + path);
             File.WriteAllLines(Namespace.Path + "/functions" + path + m.Name.ToLower() + ".mcfunction",Lines);
+        }
+
+        public static IEnumerable<string> GetRawCommands()
+        {
+            GettingRawCommands = false;
+            List<string> list = new List<string>(RawLines);
+            RawLines.Clear();
+            foreach (var i in list)
+            {
+                yield return i;
+            }
         }
     }
 }

@@ -20,8 +20,8 @@ namespace MCFunctionAPI
             EntitySelector selector = new EntitySelector("@a") { Level = "1..5", Gamemode = 0 };
             selector.Tags.And("cool");
             execute.As(selector).Run.Title(TextComponent.Of(Segment.Text("yoooo")));
-            Run("subfolder/brettyefes");
-            Run(Hello);
+            RunFunction("subfolder/brettyefes");
+            RunFunction(Hello);
             SetBlock("~ ~ ~5", "stone");
             Clone(Position.Here, "~1 ~1 ~-1", "0 1 0", MaskMode.Filtered.With("diamond_block"));
             Time += 500;
@@ -55,8 +55,18 @@ namespace MCFunctionAPI
                 selector.Gamemode = 3;
                 selector.Limit = 5;
                 selector.Scores.Where("myObj", 5);
-                execute.As(selector).Align("xz").Anchored(Anchor.Feet).Store(Storage.Result, "Shlomo", "myObj").Run.XP.Levels.Query();
 
+                EntitySelector selector2 = EntitySelector.Target("@p").InDistance("5..10").InGamemode(3).LimitTo(5).Score("myObj", 5);
+
+                EntitySelector selector3 = "@p[distance=5..10,gamemode=spectator,limit=5,scores={myObj=5}]";
+
+                
+                execute.As(selector).Store(Storage.Result, "Shlomo", "myObj").Run.XP.Levels.Query();
+                execute.As(selector2).Store(Storage.Result, "Shlomo", "myObj").Run.XP.Levels.Query();
+                execute.As(selector3).Store(Storage.Result, "Shlomo", "myObj").Run.XP.Levels.Query();
+
+
+                Console.WriteLine(GetFirstRawCommand((c) => c.Give("diamond")));
 
             }
 

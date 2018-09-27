@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Entity
@@ -31,6 +32,11 @@ namespace MCFunctionAPI.Entity
         public TypeArgument Type;
         public Sort Sort;
         public new AdvancementsArgument Advancements;
+        public NBT NBT;
+
+        private static readonly Regex Splitter = new Regex("(\\w+)={(.*,?.*)}");
+
+        public static readonly EntitySelector Self = new EntitySelector("@s");
 
         public EntitySelector(Target target)
         {
@@ -51,6 +57,71 @@ namespace MCFunctionAPI.Entity
             return this;
         }
 
+        public EntitySelector Coords(DoubleRange x, DoubleRange y, DoubleRange z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            return this;
+        }
+
+        public EntitySelector Volume(DoubleRange x, DoubleRange y, DoubleRange z)
+        {
+            DX = x;
+            DY = y;
+            DZ = z;
+            return this;
+        }
+
+        public EntitySelector InDistance(IntRange range)
+        {
+            Distance = range;
+            return this;
+        }
+
+        public EntitySelector HasLevel(IntRange range)
+        {
+            Level = range;
+            return this;
+        }
+
+        public EntitySelector Rotation(IntRange x, IntRange y)
+        {
+            X_Rotation = x;
+            Y_Rotation = y;
+            return this;
+        }
+
+        public EntitySelector Score(Objective obj, IntRange range)
+        {
+            Scores.Where(obj, range);
+            return this;
+        }
+
+        public EntitySelector InTeam(Team team)
+        {
+            Team.Is(team);
+            return this;
+        }
+
+        public EntitySelector NotInTeam(Team team)
+        {
+            Team.IsNot(team);
+            return this;
+        }
+
+        public EntitySelector InAnyTeam()
+        {
+            Team.Any();
+            return this;
+        }
+
+        public EntitySelector InNoTeam()
+        {
+            Team.None();
+            return this;
+        }
+
         public EntitySelector NotTag(string tag)
         {
             Tags.Not(tag);
@@ -66,6 +137,70 @@ namespace MCFunctionAPI.Entity
         public EntitySelector HasNoTags()
         {
             Tags.None();
+            return this;
+        }
+
+        public EntitySelector LimitTo(uint limit)
+        {
+            Limit = limit;
+            return this;
+        }
+
+        public EntitySelector InGamemode(Gamemode gm)
+        {
+            Gamemode.Is(gm);
+            return this;
+        }
+
+        public EntitySelector NotInGamemode(Gamemode gm)
+        {
+            Gamemode.IsNot(gm);
+            return this;
+        }
+
+        public EntitySelector NameIs(string name)
+        {
+            Name.Is(name);
+            return this;
+        }
+
+        public EntitySelector NameIsNot(string name)
+        {
+            Name.IsNot(name);
+            return this;
+        }
+
+        public EntitySelector Is(EntityType type)
+        {
+            Type.Is(type);
+            return this;
+        }
+
+        public EntitySelector IsNot(EntityType type)
+        {
+            Type.Not(type);
+            return this;
+        }
+
+        public EntitySelector SortBy(Sort sort)
+        {
+            Sort = sort;
+            return this;
+        }
+
+        public EntitySelector HasNBT(NBT nbt)
+        {
+            NBT = nbt;
+            return this;
+        }
+
+        public EntitySelector IsSleeping()
+        {
+            if (NBT == null)
+            {
+                NBT = new NBT();
+            }
+            NBT.Set("Sleeping", true);
             return this;
         }
 
@@ -144,6 +279,149 @@ namespace MCFunctionAPI.Entity
         public static implicit operator string(EntitySelector selector)
         {
             return selector.ToString();
+        }
+
+        public static implicit operator EntitySelector(string s)
+        {
+            int sqbrace = s.IndexOf('[');
+            if (sqbrace == -1)
+            {
+                return new EntitySelector(s);
+            }
+            EntitySelector selector = new EntitySelector(s.Substring(0, sqbrace));
+            string args = s.Substring(sqbrace + 1, s.LastIndexOf(']') - 3);
+            Match match = Splitter.Match(args);
+            while (match.Success)
+            {
+                string value = match.Groups[2].Value;
+                switch (match.Groups[1].Value)
+                {
+                    case "scores":
+                        selector.Scores = value;
+                        break;
+                    case "nbt":
+                        selector.NBT = value;
+                        break;
+                    default:
+                        break;
+                }
+                match = match.NextMatch();
+            }
+            args = string.Join("",Splitter.Split(args));
+            foreach (var arg in args.Split(','))
+            {
+                if (arg != "")
+                {
+                    string key = arg.Split('=')[0];
+                    string value = arg.Split('=')[1];
+                    switch (key)
+                    {
+                        case "x":
+                            selector.X = value;
+                            break;
+                        case "y":
+                            selector.Y = value;
+                            break;
+                        case "z":
+                            selector.Z = value;
+                            break;
+                        case "distance":
+                            selector.Distance = value;
+                            break;
+                        case "dx":
+                            selector.DX = value;
+                            break;
+                        case "dy":
+                            selector.DY = value;
+                            break;
+                        case "dz":
+                            selector.DZ = value;
+                            break;
+                        case "level":
+                            selector.Level = value;
+                            break;
+                        case "x_rotation":
+                            selector.X_Rotation = value;
+                            break;
+                        case "y_rotation":
+                            selector.Y_Rotation = value;
+                            break;
+                        case "tag":
+                            switch (value)
+                            {
+                                case "":
+                                    selector.HasNoTags();
+                                    break;
+                                case "!":
+                                    selector.HasTags();
+                                    break;
+                                default:
+                                    if (value.StartsWith("!"))
+                                    {
+                                        selector.NotTag(value.Substring(1));
+                                    }
+                                    else
+                                    {
+                                        selector.Tags.And(value);
+                                    }
+                                    break;
+                            }
+                            break;
+                        case "team":
+                            switch (value)
+                            {
+                                case "":
+                                    selector.InNoTeam();
+                                    break;
+                                case "!":
+                                    selector.InAnyTeam();
+                                    break;
+                                default:
+                                    if (value.StartsWith("!"))
+                                    {
+                                        selector.NotInTeam(value.Substring(1));
+                                    }
+                                    else
+                                    {
+                                        selector.InTeam(value);
+                                    }
+                                    break;
+                            }
+                            break;
+                        case "limit":
+                            selector.LimitTo(uint.Parse(value));
+                            break;
+                        case "gamemode":
+                            selector.InGamemode(value);
+                            break;
+                        case "name":
+                            if (value.StartsWith("!"))
+                            {
+                                selector.NameIsNot(value.Substring(1));
+                            } else
+                            {
+                                selector.NameIs(value);
+                            }
+                            break;
+                        case "type":
+                            if (value.StartsWith("!"))
+                            {
+                                selector.Type.Not(value.Substring(1));
+                            }
+                            else
+                            {
+                                selector.Type.Is(value);
+                            }
+                            break;
+                        case "sort":
+                            selector.SortBy(value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            return selector;
         }
 
     }
@@ -578,6 +856,19 @@ namespace MCFunctionAPI.Entity
         public override bool ShouldAdd()
         {
             return Scores.Count != 0;
+        }
+
+        public static implicit operator ScoreSet(string s)
+        {
+            string[] pairs = s.Split(',');
+            ScoreSet set = new ScoreSet();
+            foreach (var p in pairs)
+            {
+                string o = p.Split('=')[0];
+                string v = p.Split('=')[1];
+                set.Where(o, v);
+            }
+            return set;
         }
 
     }

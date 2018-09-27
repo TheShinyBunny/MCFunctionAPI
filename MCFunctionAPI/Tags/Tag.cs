@@ -17,6 +17,7 @@ namespace MCFunctionAPI.Tags
 
         public Tag(ResourceLocation id)
         {
+            Values = new List<T>();
             this.id = id;
             folder = Directory.CreateDirectory(id.Namespace.Path + "/tags/" + FolderName);
         }

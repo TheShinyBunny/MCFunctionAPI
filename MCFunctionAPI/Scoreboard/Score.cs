@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFunctionAPI.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace MCFunctionAPI.Scoreboard
             this.target = target;
         }
 
-        public Score(int n)
+        private Score(int n)
         {
             this.n = n;
         }
@@ -128,6 +129,11 @@ namespace MCFunctionAPI.Scoreboard
         public string GetTarget()
         {
             return target;
+        }
+
+        public Execute IsInRange(IntRange range)
+        {
+            return new Execute().If(target, objective, range);
         }
 
     }

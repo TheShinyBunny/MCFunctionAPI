@@ -1,7 +1,7 @@
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.pdb
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csproj.CoreCompileInputs.cache
 C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.pdb
-C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.dll.config
-C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.dll
-C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.dll
-C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csprojResolveAssemblyReference.cache
+C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.csprojAssemblyReference.cache
+C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.exe.config
+C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\bin\Debug\MCFunctionAPI.exe
+C:\Users\yaniv\source\repos\MCFunctionAPI\MCFunctionAPI\obj\Debug\MCFunctionAPI.exe

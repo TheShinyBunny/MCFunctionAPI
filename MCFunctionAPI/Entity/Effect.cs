@@ -9,8 +9,10 @@ namespace MCFunctionAPI.Entity
     public class Effect : EnumBase
     {
 
-        public static Effect Speed = new Effect("minecraft:speed");
-        public static Effect Strength = new Effect("minecraft:strength");
+        public static Effect Speed = new Effect("speed");
+        public static Effect Strength = new Effect("strength");
+        public static Effect Poison = new Effect("poison");
+        public static Effect Regeneration = new Effect("regeneration");
 
         private static IDictionary<string, Effect> Registry;
 

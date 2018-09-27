@@ -30,11 +30,18 @@ namespace MCFunctionAPI
             }
         }
 
-        public Execute()
+
+        public Execute(FunctionContainer container)
         {
             Run = new CommandWrapper();
-            FunctionWriter.Execute = null;
+            run.Namespace = container.Namespace;
         }
+
+        public Execute()
+        {
+            run = new CommandWrapper();
+        }
+        
         
         public Execute As(EntitySelector entity)
         {

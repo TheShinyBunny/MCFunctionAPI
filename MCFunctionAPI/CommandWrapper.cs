@@ -62,13 +62,14 @@ namespace MCFunctionAPI
         {
             set
             {
-                
+
             }
             get
             {
                 return new Time();
             }
         }
+
 
         public override string ToString()
         {
@@ -135,7 +136,68 @@ namespace MCFunctionAPI
             if (duration > 1000000) throw new ArgumentException("weather duration must be less than 1,000,000");
             FunctionWriter.Write("weather " + weather + " " + duration);
         }
-        
+
+        public delegate void Execution(CommandWrapper wrapper);
+
+        public void Do(Execution execute)
+        {
+            execute(this);
+        }
+
+        public void WriteRaw(string cmd)
+        {
+            FunctionWriter.Write(cmd);
+        }
+
+        private Namespace ns;
+        public Namespace Namespace
+        {
+            get => ns;
+            set
+            {
+                if (ns == null)
+                {
+                    ns = value;
+                }
+            }
+        }
+
+
+        public delegate void Function();
+
+        public void RunFunction(Function func)
+        {
+            if (typeof(FunctionContainer).IsAssignableFrom(func.Target.GetType()))
+            {
+                FunctionContainer container = (FunctionContainer)func.Target;
+                Type declarer = func.Method.DeclaringType;
+                RunFunction(Namespace, declarer, func.Method.Name);
+            }
+        }
+
+        public void RunFunction(string path)
+        {
+            if (path.Contains(":"))
+            {
+                FunctionWriter.Write("function " + path);
+            }
+            else
+            {
+                FunctionWriter.Write("function " + Namespace + ":" + path);
+            }
+        }
+
+        public void RunFunction(Namespace ns, Type subFolder, string methodName)
+        {
+            string path = "";
+            while (subFolder.DeclaringType != null)
+            {
+                subFolder = subFolder.DeclaringType;
+                path = subFolder.Name.ToLower() + "/" + path;
+            }
+            path += methodName.ToLower();
+            FunctionWriter.Write("function " + ns + ":" + path);
+        }
 
     }
 }
