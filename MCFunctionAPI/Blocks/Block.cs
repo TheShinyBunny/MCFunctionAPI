@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Blocks
 {
-    public class Block : IBlockState, ITaggable
+    public class Block : IBlockState<Block>, ITaggable
     {
-
-        private ResourceLocation id;
         public BlockState state;
         public NBT nbt;
 
-        public ResourceLocation Id => id;
+        public ResourceLocation Id { get; }
 
         public Block(ResourceLocation id) : this(id, new BlockState(), new NBT())
         {}
@@ -27,7 +25,7 @@ namespace MCFunctionAPI.Blocks
 
         public Block(ResourceLocation id, BlockState state, NBT nbt)
         {
-            this.id = id;
+            this.Id = id;
             this.state = state;
             this.nbt = nbt;
         }
@@ -37,19 +35,22 @@ namespace MCFunctionAPI.Blocks
             return state ?? new BlockState(this);
         }
 
-        public BlockState PutInt(string name, int value)
+        public Block PutInt(string name, int value)
         {
-            return WithState().PutInt(name, value);
+            WithState().PutInt(name, value);
+            return this;
         }
 
-        public BlockState PutBoolean(string name, bool value)
+        public Block PutBoolean(string name, bool value)
         {
-            return WithState().PutBoolean(name, value);
+            WithState().PutBoolean(name, value);
+            return this;
         }
 
-        public BlockState PutString(string name, string value)
+        public Block PutString(string name, string value)
         {
-            return WithState().PutString(name, value);
+            WithState().PutString(name, value);
+            return this;
         }
 
         public static implicit operator Block(string s)
@@ -59,25 +60,28 @@ namespace MCFunctionAPI.Blocks
 
         public static Block Parse(string s)
         {
+            int nbtStart = s.IndexOf('{');
+            int nbtEnd = s.LastIndexOf('}');
+            NBT nbt = new NBT();
+            if (nbtStart != -1)
+            {
+                nbt = s.SubstringIndexed(nbtStart, nbtEnd+1);
+                s = s.SubstringIndexed(0, nbtStart) + (nbtEnd == s.Length ? "" : s.Substring(nbtEnd + 1));
+            }
             int sqBrace = s.IndexOf('[');
             BlockState state = new BlockState();
             if (sqBrace != -1)
             {
-                state = BlockState.Parse(s.Substring(sqBrace + 1, s.IndexOf("]") - sqBrace - 1));
+                state = BlockState.Parse(s.Substring(sqBrace + 1));
             }
-            ResourceLocation id = s.Substring(0, sqBrace == -1 ? s.Length : sqBrace);
-            int curly = s.IndexOf('{');
-            NBT nbt = new NBT();
-            if (curly != -1)
-            {
-                nbt = s.Substring(curly);
-            }
+            ResourceLocation id = s.Substring(0, sqBrace == -1 ? nbtEnd == -1 ? s.Length : nbtStart : Math.Min(sqBrace,nbtStart));
+            
             return new Block(id, state, nbt);
         }
 
         public override string ToString()
         {
-            return $"{id}{(state.IsEmpty() ? "" : state.ToString())}{(nbt.IsEmpty() ? "" : nbt)}";
+            return $"{Id}{(state.IsEmpty() ? "" : state.ToString())}{(nbt.IsEmpty() ? "" : nbt)}";
         }
     }
 }

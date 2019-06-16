@@ -7,23 +7,18 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Scoreboard
 {
-    public class Score
+    public abstract class Score
     {
 
-        private Objective objective;
-        private string target;
-        private int n;
+        protected string target;
+        protected Objective objective;
 
-        public Score(Objective o, string target)
+        protected Score()
         {
-            this.objective = o;
-            this.target = target;
+
         }
 
-        private Score(int n)
-        {
-            this.n = n;
-        }
+        public abstract void Set(Objective obj, string field);
 
         public static Score operator ++(Score s)
         {
@@ -108,17 +103,17 @@ namespace MCFunctionAPI.Scoreboard
 
         public static implicit operator Score(int n)
         {
-            return new Score(n);
+            return new ConstScore(n);
+        }
+
+        public static implicit operator Score(ResultCommand cmd)
+        {
+            return new QueriedScore(cmd);
         }
 
         public void Get()
         {
             FunctionWriter.Write($"scoreboard players get {target} {objective}");
-        }
-
-        public override string ToString()
-        {
-            return n.ToString();
         }
 
         public Objective GetObjective()

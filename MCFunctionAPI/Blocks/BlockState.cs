@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Blocks
 {
-    public class BlockState : IBlockState
+    public class BlockState : IBlockState<BlockState>, INBTSerializable
     {
 
         private List<State> states;
@@ -20,6 +20,7 @@ namespace MCFunctionAPI.Blocks
         public BlockState(Block of)
         {
             this.block = of;
+            of.state = this;
         }
 
         public BlockState PutInt(string name, int value)
@@ -132,22 +133,33 @@ namespace MCFunctionAPI.Blocks
 
         public override string ToString()
         {
-            return $"[{string.Join(",", from s in states select $"{s.Name}={s.value}")}]";
+            return $"[{string.Join(",", from s in states select $"{s.Name}={s.value.ToString().ToLower()}")}]";
+        }
+
+        public object ToNBT()
+        {
+            if (IsEmpty()) return null;
+            NBT nbt = new NBT();
+            foreach (State s in states)
+            {
+                nbt.SetAny(s.Name, s.value);
+            }
+            return nbt;
         }
     }
 
-    public interface IBlockState
+    public interface IBlockState<T> where T : IBlockState<T>
     {
-        BlockState PutInt(string name, int value);
+        T PutInt(string name, int value);
 
-        BlockState PutBoolean(string name, bool value);
+        T PutBoolean(string name, bool value);
 
-        BlockState PutString(string name, string value);
+        T PutString(string name, string value);
     }
 
     public abstract class State
     {
-        public string Name { get; internal set; }
+        public string Name { get; set; }
         public object value { get; }
 
         public State(string name, object value)

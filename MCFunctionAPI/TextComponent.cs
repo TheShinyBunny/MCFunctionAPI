@@ -1,4 +1,5 @@
 ﻿using MCFunctionAPI.Entity;
+using MCFunctionAPI.Scoreboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,17 +46,12 @@ namespace MCFunctionAPI
 
         public Segment(NBT nbt) : base(nbt)
         {
-
+            SetJson(true);
         }
 
-        public Segment() : base()
+        public Segment() : base(true)
         {
 
-        }
-
-        public override bool IsJson()
-        {
-            return true;
         }
 
         public static Segment Text(string text)
@@ -68,7 +64,7 @@ namespace MCFunctionAPI
             return (Segment)new Segment().Set("translate", key).Set("with",with.ToList());
         }
 
-        public static Segment Selector(EntitySelector selector)
+        public static Segment Selector(Entities selector)
         {
             return (Segment)new Segment().Set("selector", selector.ToString());
         }
@@ -121,6 +117,11 @@ namespace MCFunctionAPI
         public Segment RunCommand(string cmd)
         {
             return (Segment)Set("clickEvent", new Segment().Set("action", "run_command").Set("value", cmd));
+        }
+
+        public Segment Trigger(Objective trigger)
+        {
+            return RunCommand($"/trigger {trigger}");
         }
 
         public Segment ChangePage(int page)

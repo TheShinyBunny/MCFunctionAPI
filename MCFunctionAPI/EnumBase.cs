@@ -18,11 +18,7 @@ namespace MCFunctionAPI
 
         protected static T Get<T>(string id, IDictionary<string, T> registry) where T : EnumBase
         {
-            if (registry.TryGetValue(id, out T v))
-            {
-                return v;
-            }
-            return null;
+            return registry.TryGetValue(id, out T value) ? value : null;
         }
 
         public override string ToString()

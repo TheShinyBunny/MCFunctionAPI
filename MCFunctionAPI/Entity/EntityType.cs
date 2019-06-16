@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MCFunctionAPI.Advancements;
+using MCFunctionAPI.Blocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -108,6 +110,13 @@ namespace MCFunctionAPI.Entity
         public static EntityType LightningBolt = new EntityType("lightning_bolt");
         public static EntityType Player = new EntityType("player");
         public static EntityType TippedArrow = new EntityType("tipped_arrow");
+        public static IEnumerable<EntityType> All
+        {
+            get
+            {
+                return Registry.Values;
+            }
+        }
 
         public EntityType(string id) : base(id)
         {
@@ -124,5 +133,6 @@ namespace MCFunctionAPI.Entity
             return Get(id, Registry);
         }
         
+
     }
 }

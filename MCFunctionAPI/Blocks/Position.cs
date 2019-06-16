@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Blocks
 {
-    public class Position : IDataContainer
+    public class Position : DataContainer
     {
 
         public RotativeCoord X { get; set; }
@@ -20,7 +20,28 @@ namespace MCFunctionAPI.Blocks
             Z = z;
         }
 
-        public static readonly Position Here = "~ ~ ~";
+        public static Position Here
+        {
+            get
+            {
+                return "~ ~ ~";
+            }
+        }
+
+        public Position Add(double x, double y, double z)
+        {
+            return new Position(X + x, Y + y, Z + z);
+        }
+
+        public Position Subtract(double x, double y, double z)
+        {
+            return new Position(X - x, Y - y, Z - z);
+        }
+
+        public Position Rotative()
+        {
+            return new Position(X.Rotated(), Y.Rotated(), Z.Rotated());
+        }
 
         public static implicit operator Position(string s)
         {
@@ -38,29 +59,44 @@ namespace MCFunctionAPI.Blocks
             return new Position(x, y, z);
         }
 
+        public static Position Above(int blocks)
+        {
+            return Here.Add(0, blocks, 0);
+        }
+
+        public static Position Above()
+        {
+            return Above(1);
+        }
+
         public override string ToString()
         {
             return $"{X} {Y} {Z}";
         }
 
-        public void GetDate(string path)
+        public override ResultCommand GetData(string path)
         {
-            FunctionWriter.Write($"data get block {this} {path}");
+            return new ResultCommand($"data get block {this} {path}", Storage.Result);
         }
 
-        public void GetData(string path, double scale)
+        public override ResultCommand GetData(string path, double scale)
         {
-            FunctionWriter.Write($"data get block {this} {path} {scale}");
+            return new ResultCommand($"data get block {this} {path} {scale}",Storage.Result);
         }
 
-        public void MergeData(NBT nbt)
+        public override void MergeData(NBT nbt)
         {
             FunctionWriter.Write($"data merge block {this} {nbt}");
         }
 
-        public void RemoveData(string path)
+        public override void RemoveData(string path)
         {
             FunctionWriter.Write($"data remove block {this} {path}");
+        }
+
+        public override string ToCommand()
+        {
+            return "block " + this;
         }
     }
 }

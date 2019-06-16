@@ -23,7 +23,7 @@ namespace MCFunctionAPI.Recipes
 
         public void SetResult(ResourceLocation item)
         {
-            this.result = item;
+            this.Result = item;
         }
 
         public void SetIngredient(ResourceLocation item)

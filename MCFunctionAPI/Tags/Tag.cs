@@ -9,7 +9,6 @@ namespace MCFunctionAPI.Tags
 {
     public abstract class Tag<T> : ITaggable where T : ITaggable
     {
-        private ResourceLocation id;
         private DirectoryInfo folder;
 
         public abstract string FolderName { get; }
@@ -18,11 +17,11 @@ namespace MCFunctionAPI.Tags
         public Tag(ResourceLocation id)
         {
             Values = new List<T>();
-            this.id = id;
+            this.Id = id;
             folder = Directory.CreateDirectory(id.Namespace.Path + "/tags/" + FolderName);
         }
 
-        public ResourceLocation Id => id;
+        public ResourceLocation Id { get; }
 
         public void Add(T val)
         {
@@ -36,12 +35,12 @@ namespace MCFunctionAPI.Tags
             }
             b.Remove(b.Length - 2, 1);
             b.Append("\t]\n}");
-            File.WriteAllText(folder.FullName + "/" + id.Path + ".json",b.ToString());
+            File.WriteAllText(folder.FullName + "/" + Id.Path + ".json",b.ToString());
         }
 
         public override string ToString()
         {
-            return "#" + id;
+            return "#" + Id;
         }
     }
 }

@@ -22,21 +22,40 @@ namespace MCFunctionAPI
             return false;
         }
 
+        public static string SubstringIndexed(this string str, int startIndex, int endIndex)
+        {
+            return str.Substring(startIndex, endIndex - startIndex);
+        }
+
         public static string ToNBTString(this object obj, bool json)
         {
             switch (obj)
             {
                 case string v:
-                    return "\"" + v + "\"";
+                default:
+                    return "\"" + obj + "\"";
                 case IEnumerable ie:
-                    return $"[{string.Join(",", from item in ie.Cast<object>() select ie.ToNBTString(json))}]";
+                    return $"[{string.Join(",", from item in ie.Cast<object>() select item.ToNBTString(json))}]";
                 case int i:
-                case NBT n:
                     return obj.ToString();
+                case double d:
+                    return obj.ToString() + 'd';
+                case float f:
+                    return obj.ToString() + 'f';
+                case byte b:
+                    return obj.ToString() + 'b';
+                case short s:
+                    return obj.ToString() + 's';
+                case long l:
+                    return obj.ToString() + 'L';
+                case NBT n:
+                    n.SetJson(json);
+                    return n.ToString();
+                case INBTSerializable ser:
+                    return ser.ToNBT().ToNBTString(json);
                 case bool b:
                     return json ? b.ToString().ToLower() : b ? "1b" : "0b";
-                default:
-                    return obj.ToString() + obj.GetType().Name[0];
+                    
             }
         }
 

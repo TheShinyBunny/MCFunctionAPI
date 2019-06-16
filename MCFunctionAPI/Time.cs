@@ -31,19 +31,19 @@ namespace MCFunctionAPI
             return t;
         }
 
-        public void GetDay()
+        public ResultCommand GetDay()
         {
-            FunctionWriter.Write("time query day");
+            return new ResultCommand("time query day",Storage.Result);
         }
 
-        public void GetDayTime()
+        public ResultCommand GetDayTime()
         {
-            FunctionWriter.Write("time query daytime");
+            return new ResultCommand("time query daytime",Storage.Result);
         }
 
-        public void GetGameTime()
+        public ResultCommand GetGameTime()
         {
-            FunctionWriter.Write("time query gametime");
+            return new ResultCommand("time query gametime", Storage.Result);
         }
 
         public override string ToString()

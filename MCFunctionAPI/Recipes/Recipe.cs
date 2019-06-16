@@ -10,23 +10,18 @@ namespace MCFunctionAPI.Recipes
     public abstract class Recipe
     {
 
-        private ResourceLocation id;
-        private string group;
-        protected ResourceLocation result;
+        public ResourceLocation Id { get; private set; }
+        public string Group { get; set; }
+        public ResourceLocation Result { get; set; }
 
         public Recipe(ResourceLocation id)
         {
-            this.id = id;
+            this.Id = id;
         }
 
         public Recipe(ResourceLocation id, string group) : this(id)
         {
-            this.group = group;
-        }
-
-        public void SetGroup(string group)
-        {
-            this.group = group;
+            this.Group = group;
         }
         
     }

@@ -48,9 +48,9 @@ namespace MCFunctionAPI
             return Get(id, Registry);
         }
 
-        public void Get()
+        public ResultCommand Get()
         {
-            FunctionWriter.Write($"gamerule {this}");
+            return new ResultCommand($"gamerule {this}",Storage.Result);
         }
     }
 

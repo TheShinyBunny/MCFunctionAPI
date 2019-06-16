@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Entity
 {
-    public class Entities : IInventoryHolder, IDataContainer
+    public class Entities : DataContainer, IInventoryHolder
     {
         private TagList tags;
         public TagList Tags { get => tags ?? (tags = new TagList(this)); private set { tags = value; } }
@@ -23,14 +23,7 @@ namespace MCFunctionAPI.Entity
             get { return spoint; }
             set
             {
-                if (this is FunctionContainer)
-                {
-                    FunctionWriter.Write("spawnpoint " + value);
-                }
-                else
-                {
-                    FunctionWriter.Write("spawnpoint " + value + " " + this);
-                }
+                FunctionWriter.Write("spawnpoint " + value + " " + this);
                 spoint = value;
             }
         }
@@ -115,13 +108,7 @@ namespace MCFunctionAPI.Entity
 
         public void Say(string msg)
         {
-            if (this is FunctionContainer)
-            {
-                FunctionWriter.Write("say " + msg);
-            } else
-            {
-                FunctionWriter.Write("say " + this + " " + msg);
-            }
+            FunctionWriter.Write("say " + this + " " + msg);
         }
 
         public void LeaveTeam()
@@ -141,11 +128,7 @@ namespace MCFunctionAPI.Entity
 
         public void Teleport(Position destination)
         {
-            if (this is FunctionContainer) {
-                FunctionWriter.Write("tp " + destination);
-            } else {
-                FunctionWriter.Write("tp " + this + " " + destination);
-            }
+            FunctionWriter.Write("tp " + this + " " + destination);
         }
 
         public void Teleport(EntitySelector entity)
@@ -175,70 +158,43 @@ namespace MCFunctionAPI.Entity
 
         public void Trigger(Objective o)
         {
-            if (this is FunctionContainer)
-            {
-                FunctionWriter.Write($"trigger {o}");
-            }
-            else
-            {
-                FunctionWriter.Write($"execute as {this} trigger {o}");
-            }
+            FunctionWriter.Write($"execute as {this} trigger {o}");
         }
 
         public void TriggerAdd(Objective o, int add)
         {
-            if (this is FunctionContainer)
-            {
-                FunctionWriter.Write($"trigger {o} add {add}");
-            }
-            else
-            {
-                FunctionWriter.Write($"execute as {this} trigger {o} add {add}");
-            }
+            FunctionWriter.Write($"execute as {this} trigger {o} add {add}");
         }
 
         public void TriggerSet(Objective o, int set)
         {
-            if (this is FunctionContainer)
-            {
-                FunctionWriter.Write($"trigger {o} set {set}");
-            }
-            else
-            {
-                FunctionWriter.Write($"execute as {this} trigger {o} set {set}");
-            }
+            FunctionWriter.Write($"execute as {this} trigger {o} set {set}");
         }
 
 
-        public void GetDate(string path)
+        public override ResultCommand GetData(string path)
         {
-            FunctionWriter.Write($"data get entity {this} {path}");
+            return new ResultCommand($"data get entity {this} {path}",Storage.Result);
         }
 
-        public void GetData(string path, double scale)
+        public override ResultCommand GetData(string path, double scale)
         {
-            FunctionWriter.Write($"data get entity {this} {path} {scale}");
+            return new ResultCommand($"data get entity {this} {path} {scale}",Storage.Result);
         }
 
-        public void MergeData(NBT nbt)
+        public override void MergeData(NBT nbt)
         {
             FunctionWriter.Write($"data merge entity {this} {nbt}");
         }
 
-        public void RemoveData(string path)
+        public override void RemoveData(string path)
         {
             FunctionWriter.Write($"data remove entity {this} {path}");
         }
         
         public void ClearInventory()
         {
-            if (this is FunctionContainer)
-            {
-                FunctionWriter.Write("clear");
-            } else
-            {
-                FunctionWriter.Write("clear " + this);
-            }
+            FunctionWriter.Write("clear " + this);
         }
 
         public void Clear(Item item)
@@ -350,6 +306,19 @@ namespace MCFunctionAPI.Entity
             FunctionWriter.Write("title " + this + " actionbar " + actionbar);
         }
         
+        public static implicit operator string(Entities entities)
+        {
+            return entities.ToString();
+        }
 
+        public override string ToString()
+        {
+            return "@s";
+        }
+
+        public override string ToCommand()
+        {
+            return "entity " + this;
+        }
     }
 }

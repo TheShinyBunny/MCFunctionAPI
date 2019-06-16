@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Scoreboard
 {
-    /**
-     * A helper class that generates all integers from 1 to a number!
-     **/
+    
+    /// <summary>
+    /// A helper class that generates all integers from 1 to a number!
+    /// </summary>
     public class Integers
     {
         private static Objective IntObjective;

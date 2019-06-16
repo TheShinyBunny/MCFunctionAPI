@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
-    public class NBT
+    public class NBT : INBTSerializable
     {
 
         private IDictionary<string, object> map;
         private string str;
+        private bool json;
 
         public NBT()
         {
@@ -22,39 +23,94 @@ namespace MCFunctionAPI
             this.str = str;
         }
 
+        public NBT(bool json): this()
+        {
+            this.json = json;
+        }
+
         public NBT(NBT nbt)
         {
             this.map = nbt.map;
             this.str = nbt.str;
         }
 
-        public NBT Set(string key, object value)
+        public virtual NBT Set(string key, int? value)
         {
-            switch (value)
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, double? value)
+        {
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, float? value)
+        {
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, byte? value)
+        {
+            return SetAny(key, value);
+        }
+
+        public void SetJson(bool json)
+        {
+            this.json = json;
+        }
+
+        public virtual NBT Set(string key, string value)
+        {
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, long? value)
+        {
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, short? value)
+        {
+            return SetAny(key, value);
+        }
+        public virtual NBT Set(string key, bool? value)
+        {
+            return SetAny(key, value);
+        }
+
+        public virtual NBT Set(string key, INBTSerializable value)
+        {
+            return SetAny(key, value?.ToNBT());
+        }
+
+        public virtual NBT Set<T>(string key, IList<T> list) where T : INBTSerializable
+        {
+            return SetAny(key, list);
+        }
+
+        public virtual NBT SetAny(string key, object value)
+        {
+            if (value != null && !(value is NBT && (value as NBT).IsEmpty()))
             {
-                case int i:
-                case long lo:
-                case string st:
-                case bool bo:
-                case short sh:
-                case byte by:
-                case float f:
-                case double d:
-                case object li when li.GetType() == typeof(IList<>):
-                case NBT n:
-                    break;
-                default:
-                    throw new ArgumentException($"Invalid value type {value.GetType().Name}");
-                case null:
-                    throw new ArgumentNullException(nameof(value));
+                if (key.Contains("."))
+                {
+                    string sub = key.Substring(0, key.IndexOf("."));
+                    if (map.TryGetValue(sub, out object val))
+                    {
+                        if (val is NBT)
+                        {
+                            SetAny(key.Substring(key.IndexOf(".") + 1), value);
+                        }
+                    } else
+                    {
+                        map.Add(sub, new NBT().SetAny(key.Substring(key.IndexOf(".") + 1), value));
+                    }
+                } else
+                {
+                    map.Add(key, value);
+                }
             }
-            map.Add(key, value);
             return this;
         }
 
-        public virtual bool IsJson()
+        public bool IsJson()
         {
-            return false;
+            return json;
         }
 
         public object this[string key]
@@ -75,14 +131,14 @@ namespace MCFunctionAPI
             {
                 if (str == null)
                 {
-                    Set(key, value);
+                    SetAny(key, value);
                 }
             }
         }
 
         public override string ToString()
         {
-            return str ?? $"{{{string.Join(",", from entry in map select $"{(IsJson()?$"\"{entry.Key}\"":entry.Key)}:{entry.Value.ToNBTString(IsJson())}")}}}";
+            return str ?? $"{{{string.Join(",", from entry in map select $"{(json?$"\"{entry.Key}\"":entry.Key)}:{entry.Value.ToNBTString(IsJson())}")}}}";
         }
 
         public static implicit operator NBT(string s)
@@ -94,5 +150,15 @@ namespace MCFunctionAPI
         {
             return str == null ? map.Count == 0 : str.Length == 0;
         }
+
+        public object ToNBT()
+        {
+            return this;
+        }
+    }
+
+    public interface INBTSerializable
+    {
+        object ToNBT();
     }
 }

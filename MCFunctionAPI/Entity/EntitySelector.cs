@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static MCFunctionAPI.CommandWrapper;
 
 namespace MCFunctionAPI.Entity
 {
@@ -33,10 +34,18 @@ namespace MCFunctionAPI.Entity
         public Sort Sort;
         public new AdvancementsArgument Advancements;
         public NBT NBT;
+        public bool NegateNBT;
+
+        public Execute Execute { get; }
 
         private static readonly Regex Splitter = new Regex("(\\w+)={(.*,?.*)}");
 
-        public static readonly EntitySelector Self = new EntitySelector("@s");
+        public static EntitySelector Self { get => new EntitySelector("@s"); }
+        public static EntitySelector AllEntities { get => new EntitySelector("@e"); }
+        public static EntitySelector AllPlayers { get => new EntitySelector("@a"); }
+        public static EntitySelector RandomPlayer { get => new EntitySelector("@r"); }
+        public static EntitySelector ClosestPlayer { get => new EntitySelector("@p"); }
+        
 
         public EntitySelector(Target target)
         {
@@ -46,8 +55,8 @@ namespace MCFunctionAPI.Entity
             Team = new TeamArgument();
             Name = new NameArgument();
             Type = new TypeArgument();
+            Execute = new Execute(this);
             Gamemode = new GamemodeArgument();
-            Execute = new Execute();
             Advancements = new AdvancementsArgument();
         }
 
@@ -95,6 +104,12 @@ namespace MCFunctionAPI.Entity
         public EntitySelector Score(Objective obj, IntRange range)
         {
             Scores.Where(obj, range);
+            return this;
+        }
+
+        public EntitySelector Score(ScoreRange score)
+        {
+            Scores.Where(score.obj, score.range);
             return this;
         }
 
@@ -200,13 +215,19 @@ namespace MCFunctionAPI.Entity
             {
                 NBT = new NBT();
             }
-            NBT.Set("Sleeping", true);
+            NBT.Set("SleepTimer", 0);
+            NegateNBT = true;
             return this;
         }
 
-        public static EntitySelector AllEntities()
+        public EntitySelector NotSleeping()
         {
-            return new EntitySelector(Entity.Target.AllEntities);
+            if (NBT == null)
+            {
+                NBT = new NBT();
+            }
+            NBT.Set("SleepTimer", 0);
+            return this;
         }
 
         public static EntitySelector Target(Target t)
@@ -226,6 +247,32 @@ namespace MCFunctionAPI.Entity
             return true;
         }
 
+        /// <summary>
+        /// Runs the specified function method.
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="at">Whether or not use the "at" execute</param>
+        public void RunFunction(bool at, Function func)
+        {
+            if (at)
+            {
+                Execute.At().RunFunction(func);
+            } else
+            {
+                RunFunction(func);
+            }
+        }
+
+        /// <summary>
+        /// Runs the specified function method, only as the entity(s), and not at.
+        /// </summary>
+        /// <param name="func"></param>
+        public void RunFunction(Function func)
+        {
+            Execute.RunFunction(func);
+        }
+
+
         public override string ToString()
         {
             List<string> args = new List<string>();
@@ -240,7 +287,7 @@ namespace MCFunctionAPI.Entity
             AddArg(args, nameof(X_Rotation), X_Rotation);
             AddArg(args, nameof(Y_Rotation), Y_Rotation);
             AddArg(args, nameof(Scores), Scores);
-            AddArg(args, nameof(Tags), Tags);
+            AddArg(args, "tag", Tags);
             AddArg(args, nameof(Team), Team);
             if (Limit != null)
             {
@@ -254,6 +301,17 @@ namespace MCFunctionAPI.Entity
             AddArg(args, nameof(Name), Name);
             AddArg(args, nameof(Type), Type);
             AddArg(args, nameof(Advancements), Advancements);
+            if (NBT != null)
+            {
+                if (NegateNBT)
+                {
+                    args.Add("nbt=!" + NBT.ToString());
+                }
+                else
+                {
+                    args.Add("nbt=" + NBT.ToString());
+                }
+            }
 
             string s = string.Join(",", args);
             if (args.Count > 0)
@@ -274,7 +332,6 @@ namespace MCFunctionAPI.Entity
             }
         }
 
-        public Execute Execute { get; set; }
 
         public static implicit operator string(EntitySelector selector)
         {
@@ -525,6 +582,14 @@ namespace MCFunctionAPI.Entity
             Advancements.Add(a, false);
             return this;
         }
+
+        public AdvancementValue this[Advancement advancement]
+        {
+            set
+            {
+                Advancements.Add(advancement, value);
+            }
+        }
         
         public AdvancementsArgument DoneSpecific(Advancement a, Dictionary<string,bool> Criteria)
         {
@@ -537,7 +602,7 @@ namespace MCFunctionAPI.Entity
             return Advancements.Count != 0;
         }
 
-        private class AdvancementValue
+        public class AdvancementValue
         {
 
             private bool b;
@@ -853,6 +918,14 @@ namespace MCFunctionAPI.Entity
             return this;
         }
 
+        public IntRange this[Objective obj]
+        {
+            set
+            {
+                Scores.Add(obj, value);
+            }
+        }
+
         public override bool ShouldAdd()
         {
             return Scores.Count != 0;
@@ -872,147 +945,7 @@ namespace MCFunctionAPI.Entity
         }
 
     }
-
-    public class IntRange : SingleArgument
-    {
-        private int? min;
-        private int? max;
-        private int? exact;
-
-        public IntRange(int? min, int? max)
-        {
-            this.min = min;
-            this.max = max;
-            this.exact = null;
-        }
-
-        public IntRange(int exact) : this(null,null)
-        {
-            this.exact = exact;
-        }
-
-        public static implicit operator IntRange(string s)
-        {
-            if (s.Contains(".."))
-            {
-                int index = s.IndexOf("..");
-                string smin = s.Substring(0,index);
-                int? min = null;
-                if (smin != "")
-                {
-                    min = int.Parse(smin);
-                }
-                int? max = null;
-                if (index + 2 < s.Length)
-                {
-                    string smax = s.Substring(index + 2);
-                    if (smax != "")
-                    {
-                        max = int.Parse(smax);
-                    }
-                }
-                return new IntRange(min, max);
-            }
-            return new IntRange(int.Parse(s));
-        }
-
-        public static implicit operator IntRange(int i)
-        {
-            return new IntRange(i);
-        }
-
-        public override string ToString()
-        {
-            string s = "";
-            if (min != null)
-                s += min;
-            if (exact == null)
-                s += "..";
-            else
-                s += exact;
-            if (max != null)
-                s += max;
-            return s;
-        }
-
-        public override string BuildValue()
-        {
-            return ToString();
-        }
-    }
-
-    public class DoubleRange : SingleArgument
-    {
-        private double? min;
-        private double? max;
-        private double? exact;
-
-        public DoubleRange(double? min, double? max)
-        {
-            this.min = min;
-            this.max = max;
-            this.exact = null;
-        }
-
-        public DoubleRange(double exact) : this(null, null)
-        {
-            this.exact = exact;
-        }
-
-        public static implicit operator DoubleRange(string s)
-        {
-            if (s.Contains(".."))
-            {
-                int index = s.IndexOf("..");
-                string smin = s.Substring(0, index);
-                double? min = null;
-                if (smin != "")
-                {
-                    min = double.Parse(smin);
-                }
-                double? max = null;
-                if (index + 2 < s.Length)
-                {
-                    string smax = s.Substring(index + 2);
-                    if (smax != "")
-                    {
-                        max = double.Parse(smax);
-                    }
-                }
-                return new DoubleRange(min, max);
-            }
-            return new DoubleRange(double.Parse(s));
-        }
-
-        public static implicit operator DoubleRange(double d)
-        {
-            return new DoubleRange(d);
-        }
-
-        public override string ToString()
-        {
-            string s = "";
-            if (min != null)
-                s += min;
-            if (exact == null)
-                s += "..";
-            else
-                s += exact;
-            if (max != null)
-                s += max;
-            return s;
-        }
-
-        public static DoubleRange Of(double min, int max)
-        {
-            return new DoubleRange(min, max);
-        }
-
-        public override string BuildValue()
-        {
-            return ToString();
-        }
-    }
+    
 
     public class TagSet : NoneAnyMixin<string>
     {

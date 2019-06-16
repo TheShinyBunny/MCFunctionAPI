@@ -11,7 +11,7 @@ namespace MCFunctionAPI.Blocks
     {
 
         public double Value { get; set; }
-        private bool relative;
+        public bool relative;
 
         public RelativeCoord(double value) : this(value,false)
         {
@@ -57,6 +57,21 @@ namespace MCFunctionAPI.Blocks
             return new RelativeCoord(double.Parse(s));
         }
 
+        public static RelativeCoord operator +(RelativeCoord coord, double d)
+        {
+            return new RelativeCoord(coord.Value + d)
+            {
+                relative = coord.relative
+            };
+        }
+
+        public static RelativeCoord operator -(RelativeCoord coord, double d)
+        {
+            return new RelativeCoord(coord.Value - d)
+            {
+                relative = coord.relative
+            };
+        }
 
     }
     

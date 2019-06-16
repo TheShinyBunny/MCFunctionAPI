@@ -9,7 +9,7 @@ namespace MCFunctionAPI.Blocks
     public class RotativeCoord : RelativeCoord
     {
 
-        private bool rotated;
+        public bool rotated;
 
         public RotativeCoord(double value) : base(value)
         {
@@ -31,6 +31,7 @@ namespace MCFunctionAPI.Blocks
         {
             return new RotativeCoord(d, true);
         }
+        
 
         public static implicit operator RotativeCoord(double d)
         {
@@ -49,10 +50,32 @@ namespace MCFunctionAPI.Blocks
             return new RotativeCoord(double.Parse(s));
         }
 
+        public RotativeCoord Rotated()
+        {
+            return new RotativeCoord(Value, true);
+        }
+
         public override string ToString()
         {
             return rotated ? $"^{(Value == 0 ? "" : Value.ToString())}" : base.ToString();
         }
 
+        public static RotativeCoord operator +(RotativeCoord coord, double d)
+        {
+            return new RotativeCoord(coord.Value + d)
+            {
+                rotated = coord.rotated,
+                relative = coord.relative
+            };
+        }
+
+        public static RotativeCoord operator -(RotativeCoord coord, double d)
+        {
+            return new RotativeCoord(coord.Value - d)
+            {
+                rotated = coord.rotated,
+                relative = coord.relative
+            };
+        }
     }
 }

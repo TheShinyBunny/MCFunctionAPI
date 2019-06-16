@@ -7,21 +7,24 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
-    public class Item : ITaggable
+    public class Item : ITaggable, INBTSerializable
     {
+        public readonly NBT nbt;
 
-        private ResourceLocation id;
-        private NBT nbt;
-
-        public ResourceLocation Id => id;
+        public ResourceLocation Id { get; }
 
         public Item(ResourceLocation id) : this(id, new NBT())
         { }
         
         public Item(ResourceLocation id, NBT nbt)
         {
-            this.id = id;
+            this.Id = id;
             this.nbt = nbt;
+        }
+
+        public static Item Of(ResourceLocation id)
+        {
+            return new Item(id);
         }
         
 
@@ -39,15 +42,42 @@ namespace MCFunctionAPI
 
         public override string ToString()
         {
-            return $"{id}{(nbt.IsEmpty() ? "" : nbt)}";
+            return $"{Id}{(nbt.IsEmpty() ? "" : nbt)}";
         }
 
-        public NBT ToNBT()
+        public object ToNBT()
         {
             NBT nbt = new NBT();
-            nbt.Set("id", id);
+            nbt.Set("id", Id.ToString());
+            nbt.Set("Count", (short)1);
             nbt.Set("tag", this.nbt);
             return nbt;
+        }
+
+        public Item SetDisplayName(string displayName)
+        {
+            return SetProperty("display.Name", "{\\\"text\\\":\\\"" + displayName + "\\\",\\\"italic\\\":false}");
+        }
+
+        public Item SetProperty(string path, object value)
+        {
+            nbt.SetAny(path, value);
+            return this;
+        }
+
+        public Item SetDamage(int damage)
+        {
+            return SetProperty("Damage",(short)damage);
+        }
+
+        public Item SetBlockEntityTag(NBT tag)
+        {
+            return SetProperty("BlockEntityTag", tag);
+        }
+
+        public Item SetBlockContainerItems(IList<Item> items)
+        {
+            return SetProperty("BlockEntityTag.Items", items);
         }
     }
 }

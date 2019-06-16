@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCFunctionAPI.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,11 @@ namespace MCFunctionAPI.Scoreboard
     public class Objective
     {
 
-        private string name;
+        public string Name { get; }
 
         protected Objective(string name)
         {
-            this.name = name;
+            this.Name = name;
         }
 
         public static Objective Of(string name)
@@ -24,6 +25,16 @@ namespace MCFunctionAPI.Scoreboard
         public static implicit operator Objective(string s)
         {
             return Of(s);
+        }
+
+        public static ScoreRange operator <(Objective o, int num)
+        {
+            return new ScoreRange(o, new IntRange(null, num - 1));
+        }
+
+        public static ScoreRange operator >(Objective o, int num)
+        {
+            return new ScoreRange(o, new IntRange(num + 1, null));
         }
 
         public void Create(string criterion)
@@ -48,24 +59,29 @@ namespace MCFunctionAPI.Scoreboard
 
         public override string ToString()
         {
-            return name;
+            return Name;
         }
 
         public Score this[string field]
         {
-            get { return new Score(this, field); }
+            get
+            {
+                return new SourcedScore(this, field);
+            }
             set
             {
-                if (value.HasValue())
-                {
-                    FunctionWriter.Write($"scoreboard players set {field} {this} {value}");
-                }
-                else if (!value.GetTarget().Equals(field) || !value.GetObjective().Equals(this))
-                {
-                    FunctionWriter.Write($"scoreboard players operation {field} {this} = {value.GetTarget()} {value.GetObjective()}");
-                }
+                value.Set(this, field);
             }
         }
+
+        public Score Everyone
+        {
+            set
+            {
+                value.Set(this, "*");
+            }
+        }
+
 
         public static void ResetAll(string name)
         {
@@ -79,7 +95,7 @@ namespace MCFunctionAPI.Scoreboard
 
         public override bool Equals(object obj)
         {
-            return obj is Objective && (obj as Objective).name.Equals(name);
+            return obj is Objective && (obj as Objective).Name.Equals(Name);
         }
 
     }

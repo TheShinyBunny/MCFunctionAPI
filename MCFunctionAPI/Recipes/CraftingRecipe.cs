@@ -26,7 +26,7 @@ namespace MCFunctionAPI.Recipes
 
         public void SetResult(ResourceLocation item, int count)
         {
-            result = item;
+            Result = item;
             resultCount = count;
         }
     }
