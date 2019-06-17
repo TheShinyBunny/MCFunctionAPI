@@ -12,7 +12,7 @@ Along the process of developing this API, I learnt many awesome features C# has 
 and it made the API a lot more simple and convenient to use than in Java.
 
 # How do I use this thing?!?!
-To use this API, download the project's .dll from the /releases/ directory. 
+To use this API, download the project's .dll from the `releases` tab. 
 In VisualStudio, Add taht dll file as a reference in a new C# console application project.
 
 ## Create the Datapack class
