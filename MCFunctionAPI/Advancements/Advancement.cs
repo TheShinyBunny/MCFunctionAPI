@@ -48,6 +48,13 @@ namespace MCFunctionAPI.Advancements
             return this;
         }
 
+        public Advancement AddTrigger(string id, ITrigger trigger)
+        {
+            Criteria.Add(id, trigger);
+            return this;
+        }
+
+
         public Advancement OnBreedAnimal(OnBreedAnimals onBreed)
         {
             AnimalsBredTrigger trigger = new AnimalsBredTrigger(onBreed);

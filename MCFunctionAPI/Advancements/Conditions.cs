@@ -11,9 +11,9 @@ namespace MCFunctionAPI.Advancements
     public class EntityCondition : INBTSerializable
     {
 
-        public DistanceCondition Distance;
-        public EffectMapCondition Effects;
-        public LocationCondition Location;
+        public DistanceCondition Distance { get; set; }
+        public EffectMapCondition Effects { get; set; }
+        public LocationCondition Location { get; set; }
         public NBT NBT { get; set; }
         public EntityType Type { get; set; }
 
@@ -134,24 +134,12 @@ namespace MCFunctionAPI.Advancements
     public class DimensionChange
     {
 
-        private Dimension from;
-        private Dimension to;
-
-        public DimensionChange From(Dimension d)
-        {
-            from = d;
-            return this;
-        }
-
-        public DimensionChange To(Dimension d)
-        {
-            to = d;
-            return this;
-        }
+        private Dimension From { get; set; }
+        private Dimension To { get; set; }
 
         public NBT ToNBT()
         {
-            return new NBT().Set("from", from?.id).Set("to", to?.id);
+            return new NBT().Set("from", From?.id).Set("to", To?.id);
         }
     }
 
@@ -179,10 +167,10 @@ namespace MCFunctionAPI.Advancements
     {
         public bool Blocked { get; set; }
         public DoubleRange Dealt { get; set; }
-        public EntityCondition DirectEntity;
-        public EntityCondition SourceEntity;
+        public EntityCondition DirectEntity { get; set; }
+        public EntityCondition SourceEntity { get; set; }
         public DoubleRange Taken { get; set; }
-        public DamageTypeCondition Type;
+        public DamageTypeCondition Type { get; set; }
 
     }
 
@@ -197,7 +185,7 @@ namespace MCFunctionAPI.Advancements
         public bool IsFire { get; set; }
         public bool IsMagic { get; set; }
         public bool IsProjectile { get; set; }
-        public EntityCondition SourceEntity;
+        public EntityCondition SourceEntity { get; set; }
 
     }
 

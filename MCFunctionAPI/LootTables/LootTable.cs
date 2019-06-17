@@ -18,6 +18,11 @@ namespace MCFunctionAPI.LootTables
         /// </summary>
         public List<Pool> Pools = new List<Pool>();
 
+        /// <summary>
+        /// Creates a new empty loot table
+        /// </summary>
+        /// <param name="name">The name of the loot table. Will be used as the file's name</param>
+        /// <param name="type">The type of loot table. Used to determine the loot_tables sub directory to place the loot table file</param>
         public LootTable(string name, TableType type)
         {
             this.Name = name;

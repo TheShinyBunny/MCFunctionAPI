@@ -78,5 +78,19 @@ namespace MCFunctionAPI.Advancements
             return new NBT().Set("child", child).Set("parent", parent).Set("partner", partner);
         }
     }
+
+    public class AnimalsBred : ITrigger
+    {
+        public EntityCondition Child { get; set; }
+        public EntityCondition Parent { get; set; }
+        public EntityCondition Partner { get; set; }
+
+        public ResourceLocation Id => "animals_bred";
+
+        public NBT RunEvent()
+        {
+            return new NBT().Set("child", Child).Set("parent", Parent).Set("partner",Partner);
+        }
+    }
     
 }

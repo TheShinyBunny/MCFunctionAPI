@@ -84,7 +84,7 @@ namespace MCFunctionAPI
 
             foreach (var t in c.GetNestedTypes())
             {
-                CompileRecursive(t,path + LowerCase(t.Name) + "/");
+                CompileRecursive(t,path + Utils.LowerCase(t.Name) + "/");
             }
         }
 
@@ -113,7 +113,7 @@ namespace MCFunctionAPI
                 }
             }
             
-            CurrentPath = path + LowerCase(m.Name);
+            CurrentPath = path + Utils.LowerCase(m.Name);
             m.Invoke(instance, null);
             if (path != "")
             {
@@ -208,7 +208,7 @@ namespace MCFunctionAPI
             {
                 while (subFolder != null)
                 {
-                    path = LowerCase(subFolder.Name) + "/" + path;
+                    path = Utils.LowerCase(subFolder.Name) + "/" + path;
                     if (subFolder.DeclaringType == null)
                     {
                         NestedFolder nested = subFolder.GetCustomAttribute<NestedFolder>();
@@ -227,56 +227,8 @@ namespace MCFunctionAPI
                     }
                 }
             }
-            path += LowerCase(f.Method.Name);
+            path += Utils.LowerCase(f.Method.Name);
             return Namespace + ":" + path;
-        }
-
-        public static string LowerCase(string name)
-        {
-            string s = "";
-            for (int i = 0; i < name.Length; i++)
-            {
-
-                char n = name[i];
-                if (i != 0)
-                {
-                    if (char.IsUpper(n))
-                    {
-                        if (i < name.Length - 1)
-                        {
-                            return s + "_" + char.ToLower(n) + LowerCase(name.Substring(i + 1));
-                        }
-                        return s + char.ToLower(n);
-                    }
-                }
-                s += char.ToLower(n);
-            }
-            return s;
-        }
-
-        public static string UpperCase(string name, bool space)
-        {
-            string s = "";
-            bool upper = true;
-            for (int i = 0; i < name.Length; i++)
-            {
-                if (upper)
-                {
-                    s += char.ToUpper(name[i]);
-                    upper = false;
-                } else if (name[i] == '_')
-                {
-                    if (space)
-                    {
-                        s += ' ';
-                    }
-                    upper = true;
-                } else
-                {
-                    s += name[i];
-                }
-            }
-            return s;
         }
 
         public static void Space()

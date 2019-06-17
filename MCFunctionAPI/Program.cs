@@ -19,17 +19,29 @@ namespace MCFunctionAPI
             Program p = new Program();
             Namespace main = p.CreateNamespace("main");
             main.AddFunctions(typeof(MyFunctions));
-
-            /*
+             
             Advancement test = new Advancement("main:mytab/test")
             {
                 Title = "Pig Breeder",
                 Description = "Breed two pigs together",
                 Icon = "carrot"
             }
-            .OnBreedAnimal((child, parent, partner) => { child.Type = EntityType.Pig; parent.NBT = "{foo:\"bar\"}"; });
-            */
-            
+            .OnBreedAnimal((child, parent, partner) => { child.Type = EntityType.Pig; });
+
+            Advancement test2 = new Advancement("main:mytab/test")
+            {
+                Title = "Pig Breeder",
+                Description = "Breed two pigs together",
+                Icon = "carrot"
+            }.AddTrigger("breed_pigs", new AnimalsBred()
+            {
+                Child = new EntityCondition()
+                {
+                    Type = EntityType.Pig
+                }
+            });
+
+
             LootTable skeleton = new LootTable("skeleton",TableType.Entity)
             {
                 new Pool()

@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.LootTables
 {
+    /// <summary>
+    /// A pool is a list of <see cref="Entry"/> objects.
+    /// When generating items for the loot, every pool is activated.
+    /// </summary>
     public class Pool : IConditionable<Pool>, IEnumerable<Entry>, INBTSerializable
     {
 
@@ -16,7 +20,7 @@ namespace MCFunctionAPI.LootTables
         public List<Condition> Conditions = new List<Condition>();
 
         /// <summary>
-        /// Specifies the number of rolls on the pool
+        /// Specifies the number of times to activate this pool
         /// </summary>
         public IntRange Rolls { get; set; }
         /// <summary>
@@ -28,9 +32,19 @@ namespace MCFunctionAPI.LootTables
         /// </summary>
         public List<Entry> Entries = new List<Entry>();
 
-        public Pool(IntRange rolls)
+        /// <summary>
+        /// Creates a new pool.
+        /// </summary>
+        /// <param name="rolls"></param>
+        public Pool(IntRange rolls) : this(rolls,null)
+        {
+
+        }
+
+        public Pool(IntRange rolls, DoubleRange bonusRolls)
         {
             Rolls = rolls;
+            BonusRolls = bonusRolls;
         }
 
         public Pool()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
-    public abstract class EnumBase
+    public abstract class EnumBase : INBTSerializable
     {
 
         public string id { get; }
@@ -37,6 +37,9 @@ namespace MCFunctionAPI
             return 1877310944 + EqualityComparer<string>.Default.GetHashCode(id);
         }
 
-
+        public object ToNBT()
+        {
+            return id;
+        }
     }
 }
