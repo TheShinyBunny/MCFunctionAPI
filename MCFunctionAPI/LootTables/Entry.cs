@@ -76,7 +76,7 @@ namespace MCFunctionAPI.LootTables
 
         public object ToNBT()
         {
-            return new NBT().Set("type", FunctionWriter.LowerCase(Type.ToString())).Set("name",Name).Set("conditions", Utils.NullIfEmpty(Conditions)).Set("expand", Type == EntryType.Tag ? Expand : (bool?)null).Set("functions", Utils.NullIfEmpty(Functions)).Set("weight", Weight == 0 ? (int?)null : Weight).Set("quality", Quality == 0 ? (int?)null : Quality);
+            return new NBT().Set("type", Utils.LowerCase(Type.ToString())).Set("name",Name).Set("conditions", Utils.NullIfEmpty(Conditions)).Set("expand", Type == EntryType.Tag ? Expand : (bool?)null).Set("functions", Utils.NullIfEmpty(Functions)).Set("weight", Weight == 0 ? (int?)null : Weight).Set("quality", Quality == 0 ? (int?)null : Quality);
         }
     }
 

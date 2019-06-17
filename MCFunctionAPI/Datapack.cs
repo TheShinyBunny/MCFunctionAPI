@@ -43,18 +43,13 @@ namespace MCFunctionAPI
 
         public Datapack()
         {
-            DataFolder = Directory.CreateDirectory("Tests/" + GetName() + "/data");
-            File.WriteAllLines("Tests/" + GetName() + "/pack.mcmeta",new string[] {
-                "{",
-                "    \"pack\": {",
-                "        \"description\":\"" + GetDescription() + "\",",
-                "        \"pack_format\":1",
-                "   }",
-                "}" });
+            DataFolder = Directory.CreateDirectory("datapacks/" + GetName() + "/data");
+            File.WriteAllText("Tests/" + GetName() + "/pack.mcmeta", 
+                new NBT().Set("pack", new NBT().Set("description", GetDescription()).Set("pack_format", 1)).ToString(true, true));
         }
 
         /// <summary>
-        /// The Datapack's name use to create the folder.
+        /// The Datapack's name used as the folder name.
         /// </summary>
         /// <returns>A name for the datapack</returns>
         public abstract string GetName();

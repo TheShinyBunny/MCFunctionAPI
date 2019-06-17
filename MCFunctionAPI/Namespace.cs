@@ -76,7 +76,7 @@ namespace MCFunctionAPI
         /// <param name="container"></param>
         public void AddFunctions(Type container)
         {
-            FunctionWriter.GenerateFunctions(container.GetCustomAttribute<Root>() == null ? FunctionWriter.LowerCase(container.Name) + "/" : "",this, container);
+            FunctionWriter.GenerateFunctions(container.GetCustomAttribute<Root>() == null ? Utils.LowerCase(container.Name) + "/" : "",this, container);
         }
 
         public BlockTag AddBlockTag(string id, params Block[] values)

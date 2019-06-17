@@ -28,6 +28,8 @@ namespace MCFunctionAPI
             }
             .OnBreedAnimal((child, parent, partner) => { child.Type = EntityType.Pig; });
 
+            // OR
+
             Advancement test2 = new Advancement("main:mytab/test")
             {
                 Title = "Pig Breeder",

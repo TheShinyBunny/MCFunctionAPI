@@ -114,7 +114,6 @@
             AddFunction(LootFunction.SetNBT(nbt));
             return this as This;
         }
-        
 
         public abstract void AddFunction(LootFunction f);
 

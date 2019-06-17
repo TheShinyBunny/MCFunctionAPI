@@ -26,14 +26,17 @@ namespace MCFunctionAPI
             Time += 500;
 
         }
-        
 
+        public const string a = "hi";
+
+        [Desc(a)]
         public static void BrettyEfes()
         {
             EntitySelector selector = EntitySelector.Target("@p");
             selector.Distance = "5..10";
             selector.Gamemode = 3;
             selector.Limit = 5;
+
             selector.Scores.Where("myObj", 5);
 
             EntitySelector selector2 = EntitySelector.Target("@p").InDistance("5..10").InGamemode(3).LimitTo(5).Score("myObj", 5);

@@ -9,18 +9,41 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
+
+    /// <summary>
+    /// The main system for writing function files
+    /// </summary>
     public class FunctionWriter
     {
+        /// <summary>
+        /// A stack that holds the current nested execute commands
+        /// </summary>
         public static Stack<Execute> Execute = new Stack<Execute>();
+        /// <summary>
+        /// The current namespace the function writer is adding functions to
+        /// </summary>
         public static Namespace Namespace;
-
-        public static string CompilationPath { get; private set; }
-
+        /// <summary>
+        /// The lines generated to write into the .mcfunction file
+        /// </summary>
         private static List<string> Lines = new List<string>();
+        /// <summary>
+        /// The currently compiling function's path, including the file name (without extension)
+        /// </summary>
         private static string CurrentPath;
+        /// <summary>
+        /// If true, every new line written to the function container will be inserted to the <see cref="RawLines"/>, instead of <see cref="Lines"/>.
+        /// </summary>
         public static bool GettingRawCommands;
+        /// <summary>
+        /// All collected lines while <see cref="GettingRawCommands"/> is true. Used to get commands generated from the API without adding them to the file.
+        /// </summary>
         private static List<string> RawLines = new List<string>();
 
+        /// <summary>
+        /// Writes a single line to the mcfunction file. Will add to the line any existing nested execute commands.
+        /// </summary>
+        /// <param name="cmd">The line to add to the <see cref="Lines"/> list</param>
         public static void Write(string cmd)
         {
             if (Execute.Count > 0)
@@ -60,10 +83,15 @@ namespace MCFunctionAPI
             }
         }
 
+        /// <summary>
+        /// Generates all functions inside the given <seealso cref="FunctionContainer"/>
+        /// </summary>
+        /// <param name="path">The current path to the functions inside the container</param>
+        /// <param name="ns">The namespace to add functions to</param>
+        /// <param name="container">A <code>typeof(Type : FunctionContainer) to make all static methods to functions</code></param>
         public static void GenerateFunctions(string path, Namespace ns, Type container)
         {
             Namespace = ns;
-            CompilationPath = path;
             Directory.CreateDirectory(ns.Path + "/functions");
             CompileRecursive(container,path);
         }
@@ -90,6 +118,7 @@ namespace MCFunctionAPI
 
         public static void Compile(Type c, MethodInfo m, string path)
         {
+            CurrentPath = path + Utils.LowerCase(m.Name);
             Lines.Clear();
             Desc d = m.GetCustomAttribute<Desc>();
             if (d != null)
@@ -113,7 +142,6 @@ namespace MCFunctionAPI
                 }
             }
             
-            CurrentPath = path + Utils.LowerCase(m.Name);
             m.Invoke(instance, null);
             if (path != "")
             {
@@ -214,7 +242,7 @@ namespace MCFunctionAPI
                         NestedFolder nested = subFolder.GetCustomAttribute<NestedFolder>();
                         if (nested == null)
                         {
-                            subFolder = subFolder.DeclaringType;
+                            subFolder = null;
                         }
                         else
                         {

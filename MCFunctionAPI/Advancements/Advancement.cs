@@ -74,14 +74,16 @@ namespace MCFunctionAPI.Advancements
             return new NBT().Set("display", display).ToString(true,true);
         }
 
-        public enum FrameType
-        {
-            Task,
-            Goal,
-            Challenge
-        }
+        
         
 
+    }
+
+    public enum FrameType
+    {
+        Task,
+        Goal,
+        Challenge
     }
 
 }

@@ -27,7 +27,7 @@ namespace MCFunctionAPI
         
         public static void AddSubFunctions(string path, Type subFolder)
         {
-            FunctionWriter.CompileRecursive(subFolder, path + "/" + FunctionWriter.LowerCase(subFolder.Name) + "/");
+            FunctionWriter.CompileRecursive(subFolder, path + "/" + Utils.LowerCase(subFolder.Name) + "/");
         }
 
         public static Execute execute
