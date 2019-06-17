@@ -33,17 +33,17 @@ namespace MCFunctionAPI
 
         public ResultCommand GetDay()
         {
-            return new ResultCommand("time query day",Storage.Result);
+            return new ResultCommand("time query day");
         }
 
         public ResultCommand GetDayTime()
         {
-            return new ResultCommand("time query daytime",Storage.Result);
+            return new ResultCommand("time query daytime");
         }
 
         public ResultCommand GetGameTime()
         {
-            return new ResultCommand("time query gametime", Storage.Result);
+            return new ResultCommand("time query gametime");
         }
 
         public override string ToString()

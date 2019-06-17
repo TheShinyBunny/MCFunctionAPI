@@ -10,16 +10,9 @@ namespace MCFunctionAPI.LootTables
     public class Condition : ExtendsNBT<Condition>
     {
 
-        public string Id { get; }
-
-        public Condition(string id)
-        {
-            this.Id = id;
-        }
-
         private static Condition New(string id)
         {
-            return new Condition(id);
+            return new Condition().Set("condition", id);
         }
 
         public static Condition Alternative(List<Condition> terms)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
+    [Root]
     public class MyFunctions : FunctionContainer
     {
         
@@ -24,7 +25,6 @@ namespace MCFunctionAPI
             Clone(Position.Here, "~1 ~1 ~-1", "0 1 0", MaskMode.Filtered.With("diamond_block"));
             Time += 500;
 
-            RunFunction(Utils.Randomize);
         }
         
 

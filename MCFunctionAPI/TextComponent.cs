@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
-    public class TextComponent
+    public class TextComponent : INBTSerializable
     {
 
         private string plain;
@@ -29,6 +29,11 @@ namespace MCFunctionAPI
             return new TextComponent(segments);
         }
 
+        public object ToNBT()
+        {
+            return segments;
+        }
+
         public override string ToString()
         {
             if (plain != null) return plain;
@@ -39,6 +44,8 @@ namespace MCFunctionAPI
         {
             return new TextComponent(s);
         }
+
+        
     }
 
     public class Segment : NBT
@@ -46,10 +53,10 @@ namespace MCFunctionAPI
 
         public Segment(NBT nbt) : base(nbt)
         {
-            SetJson(true);
+
         }
 
-        public Segment() : base(true)
+        public Segment() : base()
         {
 
         }
@@ -147,6 +154,11 @@ namespace MCFunctionAPI
         public Segment ShowEntity(NBT entity)
         {
             return (Segment)Set("hoverEvent", new Segment().Set("action", "show_text").Set("value", entity.ToString()));
+        }
+
+        public override string ToString()
+        {
+            return base.ToString(true, false);
         }
     }
 }

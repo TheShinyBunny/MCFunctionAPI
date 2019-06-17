@@ -76,12 +76,12 @@ namespace MCFunctionAPI.Blocks
 
         public override ResultCommand GetData(string path)
         {
-            return new ResultCommand($"data get block {this} {path}", Storage.Result);
+            return new ResultCommand($"data get block {this} {path}");
         }
 
         public override ResultCommand GetData(string path, double scale)
         {
-            return new ResultCommand($"data get block {this} {path} {scale}",Storage.Result);
+            return new ResultCommand($"data get block {this} {path} {scale}");
         }
 
         public override void MergeData(NBT nbt)

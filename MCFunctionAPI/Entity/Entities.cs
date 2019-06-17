@@ -174,12 +174,12 @@ namespace MCFunctionAPI.Entity
 
         public override ResultCommand GetData(string path)
         {
-            return new ResultCommand($"data get entity {this} {path}",Storage.Result);
+            return new ResultCommand($"data get entity {this} {path}");
         }
 
         public override ResultCommand GetData(string path, double scale)
         {
-            return new ResultCommand($"data get entity {this} {path} {scale}",Storage.Result);
+            return new ResultCommand($"data get entity {this} {path} {scale}");
         }
 
         public override void MergeData(NBT nbt)

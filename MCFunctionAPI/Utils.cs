@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI
 {
-    public class Utils : FunctionContainer
+    public class Utils
     {
-        public static void Randomize()
+        public static List<T> NullIfEmpty<T>(List<T> e)
         {
-            Say("Getting random number between 1 - 1000");
-
+            return e.Count() == 0 ? default : e;
         }
     }
 }

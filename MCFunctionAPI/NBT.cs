@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,6 @@ namespace MCFunctionAPI
 
         private IDictionary<string, object> map;
         private string str;
-        private bool json;
 
         public NBT()
         {
@@ -23,10 +23,6 @@ namespace MCFunctionAPI
             this.str = str;
         }
 
-        public NBT(bool json): this()
-        {
-            this.json = json;
-        }
 
         public NBT(NBT nbt)
         {
@@ -49,11 +45,6 @@ namespace MCFunctionAPI
         public virtual NBT Set(string key, byte? value)
         {
             return SetAny(key, value);
-        }
-
-        public void SetJson(bool json)
-        {
-            this.json = json;
         }
 
         public virtual NBT Set(string key, string value)
@@ -108,10 +99,6 @@ namespace MCFunctionAPI
             return this;
         }
 
-        public bool IsJson()
-        {
-            return json;
-        }
 
         public object this[string key]
         {
@@ -138,7 +125,55 @@ namespace MCFunctionAPI
 
         public override string ToString()
         {
-            return str ?? $"{{{string.Join(",", from entry in map select $"{(json?$"\"{entry.Key}\"":entry.Key)}:{entry.Value.ToNBTString(IsJson())}")}}}";
+            return ToString(false,false);
+        }
+
+        public string ToString(bool json, bool prettyPrint)
+        {
+            if (str != null) return str;
+            if (!prettyPrint) return $"{{{string.Join(",", from entry in map select $"{(json ? $"\"{entry.Key}\"" : entry.Key)}:{entry.Value.ToNBTString(json,null)}")}}}";
+            return PrettyPrint(json,"");
+        }
+
+        public string ToString(bool json, string prettyIndent)
+        {
+            if (prettyIndent == null) return ToString(json, false);
+            return PrettyPrint(json, prettyIndent);
+        }
+
+        private string PrettyPrint(bool json, string indent) {
+            string s = "{\n";
+            bool first = true;
+            foreach (var e in map)
+            {
+                if (!first)
+                {
+                    s += ",\n";
+                }
+                first = false;
+                s += indent + "    " + (json ? "\"" + e.Key + "\"" : e.Key) + ": ";
+
+                if (e.Value is ICollection)
+                {
+                    s += "[\n";
+                    bool first2 = true;
+                    foreach (object o in e.Value as IEnumerable)
+                    {
+                        if (!first2)
+                        {
+                            s += ",\n";
+                        }
+                        s += indent + "        " + o.ToNBTString(json,indent + "        ");
+                        first2 = false;
+                    }
+                    s += "\n" + indent + "    ]";
+                } else
+                {
+                    s += e.Value.ToNBTString(json, indent + "    ");
+                }
+            }
+            s += "\n" + indent + "}";
+            return s;
         }
 
         public static implicit operator NBT(string s)

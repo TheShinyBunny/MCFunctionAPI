@@ -66,7 +66,7 @@ namespace MCFunctionAPI.LootTables
 
         public object ToNBT()
         {
-            return new NBT().Set("rolls", Rolls).Set("bonus_rolls", BonusRolls).Set("conditions", Conditions).Set("entries", Entries);
+            return new NBT().Set("rolls", Rolls).Set("bonus_rolls", BonusRolls).Set("conditions", Utils.NullIfEmpty(Conditions)).Set("entries", Entries);
         }
     }
 }

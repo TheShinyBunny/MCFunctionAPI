@@ -131,7 +131,9 @@ namespace MCFunctionAPI
             string dir = GetLootTableTypeDir(table.Type);
             if (dir != null)
             {
-                File.WriteAllText(Path + "/loot_tables/" + dir + "/" + table.Name + ".json", table.ToJson());
+                string path = Path + "/loot_tables/" + dir;
+                Directory.CreateDirectory(path);
+                File.WriteAllText(path + "/" + table.Name + ".json", table.ToJson());
             }
         }
 

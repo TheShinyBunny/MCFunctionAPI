@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MCFunctionAPI.Advancements
 {
 
-    public interface Trigger
+    public interface ITrigger
     {
         ResourceLocation Id { get; }
 
@@ -16,7 +16,7 @@ namespace MCFunctionAPI.Advancements
         
     }
 
-    public abstract class Trigger<D> : Trigger where D : Delegate
+    public abstract class Trigger<D> : ITrigger where D : Delegate
     {
 
         protected D del;

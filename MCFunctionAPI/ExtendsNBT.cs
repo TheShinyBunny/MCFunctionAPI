@@ -65,7 +65,7 @@ namespace MCFunctionAPI
             return this as This;
         }
 
-        public This Set<T>(string key, IList<T> list)
+        public This Set<T>(string key, IList<T> list) where T : INBTSerializable
         {
             del.Set(key, list);
             return this as This;
@@ -75,16 +75,6 @@ namespace MCFunctionAPI
         {
             del.SetAny(key, value);
             return this as This;
-        }
-
-        public void SetJson(bool json)
-        {
-            del.SetJson(json);
-        }
-
-        public bool IsJson()
-        {
-            return del.IsJson();
         }
 
         public object this[string key]
@@ -97,6 +87,7 @@ namespace MCFunctionAPI
         {
             return del.ToString();
         }
+
 
         public bool IsEmpty()
         {

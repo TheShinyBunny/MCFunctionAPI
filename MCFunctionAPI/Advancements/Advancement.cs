@@ -12,12 +12,22 @@ namespace MCFunctionAPI.Advancements
         public TextComponent Title { get; set; }
         public TextComponent Description { get; set; }
         public Item Icon { get; set; }
-        private Dictionary<string, Trigger> Criteria;
+        public FrameType Frame { get; set; }
+
+        public bool ShowToast { get; set; }
+        public bool AnnounceToChat { get; set; }
+
+        public bool Hidden { get; set; }
+
+        private Dictionary<string, ITrigger> Criteria = new Dictionary<string, ITrigger>();
         private bool Grouping;
 
         public Advancement(ResourceLocation id)
         {
             Id = id;
+            ShowToast = true;
+            AnnounceToChat = true;
+            Hidden = false;
         }
 
         public Advancement OrGroup()
@@ -42,6 +52,26 @@ namespace MCFunctionAPI.Advancements
         {
             AnimalsBredTrigger trigger = new AnimalsBredTrigger(onBreed);
             return AddTrigger(trigger);
+        }
+
+        public string ToJson()
+        {
+            NBT display = new NBT()
+                .Set("title", Title)
+                .Set("description", Description)
+                .Set("icon", new NBT().Set("item", Icon.Id).Set("nbt", Icon.nbt.IsEmpty() ? null : Icon.nbt.ToString()))
+                .Set("frame", Frame.ToString().ToLower())
+                .Set("show_toast", ShowToast)
+                .Set("announce_to_chat", AnnounceToChat)
+                .Set("hidden", Hidden);
+            return new NBT().Set("display", display).ToString(true,true);
+        }
+
+        public enum FrameType
+        {
+            Task,
+            Goal,
+            Challenge
         }
         
 

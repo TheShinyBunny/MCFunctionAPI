@@ -39,7 +39,7 @@ namespace MCFunctionAPI.LootTables
         public Entry(Namespace ns, LootTable lootTable)
         {
             this.Type = EntryType.LootTable;
-            Name = ns + ":" + Namespace.GetLootTableTypeDir(lootTable.Type) + "/" + lootTable.Name;
+            Name = new ResourceLocation(ns, Namespace.GetLootTableTypeDir(lootTable.Type) + "/" + lootTable.Name);
         }
 
         public override void AddFunction(LootFunction f)
@@ -54,7 +54,7 @@ namespace MCFunctionAPI.LootTables
 
         public object ToNBT()
         {
-            return new NBT().Set("type", FunctionWriter.LowerCase(Type.ToString())).Set("conditions", Conditions).Set("expand", Expand).Set("functions", Functions).Set("weight", Weight).Set("quality", Quality);
+            return new NBT().Set("type", FunctionWriter.LowerCase(Type.ToString())).Set("name",Name).Set("conditions", Utils.NullIfEmpty(Conditions)).Set("expand", Type == EntryType.Tag ? Expand : (bool?)null).Set("functions", Utils.NullIfEmpty(Functions)).Set("weight", Weight == 0 ? (int?)null : Weight).Set("quality", Quality == 0 ? (int?)null : Quality);
         }
     }
 

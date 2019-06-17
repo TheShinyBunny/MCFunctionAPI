@@ -32,7 +32,7 @@ namespace MCFunctionAPI.LootTables
 
         public string ToJson()
         {
-            return new NBT(true).Set("type", FunctionWriter.LowerCase(Type.ToString())).Set("pools", Pools).ToString();
+            return new NBT().Set("type", FunctionWriter.LowerCase(Type.ToString())).Set("pools", Pools).ToString(true, true);
         }
 
         public IEnumerator<Pool> GetEnumerator()

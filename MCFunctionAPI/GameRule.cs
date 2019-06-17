@@ -50,7 +50,7 @@ namespace MCFunctionAPI
 
         public ResultCommand Get()
         {
-            return new ResultCommand($"gamerule {this}",Storage.Result);
+            return new ResultCommand($"gamerule {this}");
         }
     }
 

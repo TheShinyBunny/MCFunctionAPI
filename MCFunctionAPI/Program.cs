@@ -19,7 +19,6 @@ namespace MCFunctionAPI
             Program p = new Program();
             Namespace main = p.CreateNamespace("main");
             main.AddFunctions(typeof(MyFunctions));
-            main.AddFunctions(typeof(Utils));
 
             /*
             Advancement test = new Advancement("main:mytab/test")
