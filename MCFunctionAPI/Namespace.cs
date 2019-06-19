@@ -35,6 +35,7 @@ namespace MCFunctionAPI
         public string LoadFunctionPath { get; set; }
         public string TickFunctionPath { get; set; }
         public List<Objective> LoadObjectives = new List<Objective>();
+        public List<Objective> AddedLoadObjectives = new List<Objective>();
 
         public Dictionary<ScoreEventHandler,string> PendingScoreHandlers = new Dictionary<ScoreEventHandler,string>();
 
@@ -113,11 +114,13 @@ namespace MCFunctionAPI
         {
             if (LoadFunctionPath == null)
             {
-                LoadObjectives.Add(objective);
+                Datapack.CreateLoadTag(new ResourceLocation(this,"init"));
+                LoadFunctionPath = "init";
             }
-            else
+            if (!AddedLoadObjectives.Contains(objective))
             {
                 File.AppendAllLines(Path + "/functions/" + LoadFunctionPath + ".mcfunction", new string[] { $"scoreboard objectives add {objective.Name} dummy" });
+                AddedLoadObjectives.Add(objective);
             }
         }
 

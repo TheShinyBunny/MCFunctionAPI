@@ -24,7 +24,7 @@ namespace MCFunctionAPI
             return new DataModifier(this, path);
         }
 
-        public abstract string ToCommand();
+        public abstract string ToDataCommand();
 
         public class DataModifier
         {
@@ -82,7 +82,7 @@ namespace MCFunctionAPI
 
             public void Value(string value)
             {
-                FunctionWriter.Write($"data modify {modifier.container.ToCommand()} {modifier.path} {mode} value {value}");
+                FunctionWriter.Write($"data modify {modifier.container.ToDataCommand()} {modifier.path} {mode} value {value}");
             }
 
             public void Value(NBT value)
@@ -92,7 +92,7 @@ namespace MCFunctionAPI
 
             public void From(DataContainer container, string path)
             {
-                FunctionWriter.Write($"data modify {modifier.container.ToCommand()} {modifier.path} {mode} from {container.ToCommand()} {path}");
+                FunctionWriter.Write($"data modify {modifier.container.ToDataCommand()} {modifier.path} {mode} from {container.ToDataCommand()} {path}");
             }
             
         }

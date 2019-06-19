@@ -26,11 +26,16 @@ namespace MCFunctionAPI
 
         public NBT(NBT nbt)
         {
-            this.map = nbt.map;
+            this.map = new Dictionary<string,object>(nbt.map);
             this.str = nbt.str;
         }
 
-        public virtual NBT Set(string key, int? value)
+        public NBT Copy()
+        {
+            return new NBT(this);
+        }
+
+        public NBT Set(string key, int? value)
         {
             return SetAny(key, value);
         }
@@ -38,43 +43,68 @@ namespace MCFunctionAPI
         {
             return SetAny(key, value);
         }
-        public virtual NBT Set(string key, float? value)
+        public NBT Set(string key, float? value)
         {
             return SetAny(key, value);
         }
-        public virtual NBT Set(string key, byte? value)
-        {
-            return SetAny(key, value);
-        }
-
-        public virtual NBT Set(string key, string value)
-        {
-            return SetAny(key, value);
-        }
-        public virtual NBT Set(string key, long? value)
-        {
-            return SetAny(key, value);
-        }
-        public virtual NBT Set(string key, short? value)
-        {
-            return SetAny(key, value);
-        }
-        public virtual NBT Set(string key, bool? value)
+        public NBT Set(string key, byte? value)
         {
             return SetAny(key, value);
         }
 
-        public virtual NBT Set(string key, INBTSerializable value)
+        public NBT Set(string key, string value)
+        {
+            return SetAny(key, value);
+        }
+        public NBT Set(string key, long? value)
+        {
+            return SetAny(key, value);
+        }
+        public NBT Set(string key, short? value)
+        {
+            return SetAny(key, value);
+        }
+        public NBT Set(string key, bool? value)
+        {
+            return SetAny(key, value);
+        }
+
+        public NBT Set(string key, INBTSerializable value)
         {
             return SetAny(key, value?.ToNBT());
         }
 
-        public virtual NBT Set<T>(string key, IList<T> list) where T : INBTSerializable
+        public NBT Set<T>(string key, IList<T> list) where T : INBTSerializable
         {
             return SetAny(key, list);
         }
 
-        public virtual NBT SetAny(string key, object value)
+        public NBT Set(string key, IList<string> stringList)
+        {
+            return SetAny(key, stringList);
+        }
+
+        public NBT Set(string key, IList<int> stringList)
+        {
+            return SetAny(key, stringList);
+        }
+
+        public NBT Set(string key, IList<double> stringList)
+        {
+            return SetAny(key, stringList);
+        }
+
+        public NBT Set(string key, IList<float> stringList)
+        {
+            return SetAny(key, stringList);
+        }
+
+        public NBT Set(string key, IList<byte> stringList)
+        {
+            return SetAny(key, stringList);
+        }
+
+        public NBT SetAny(string key, object value)
         {
             if (value != null && !(value is NBT && (value as NBT).IsEmpty()))
             {

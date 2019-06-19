@@ -43,8 +43,8 @@ namespace MCFunctionAPI
 
         public Datapack()
         {
-            DataFolder = Directory.CreateDirectory("datapacks/" + GetName() + "/data");
-            File.WriteAllText("Tests/" + GetName() + "/pack.mcmeta", 
+            DataFolder = Directory.CreateDirectory("out/" + GetName() + "/data");
+            File.WriteAllText("out/" + GetName() + "/pack.mcmeta", 
                 new NBT().Set("pack", new NBT().Set("description", GetDescription()).Set("pack_format", 1)).ToString(true, true));
         }
 
@@ -71,12 +71,15 @@ namespace MCFunctionAPI
         /// <param name="function">The function's ResourceLocation to run on reload</param>
         public void CreateLoadTag(ResourceLocation function)
         {
-            if (LoadTag == null)
+            if (function.Namespace.LoadFunctionPath == null)
             {
-                EnsureDefaultNamespace();
-                LoadTag = new FunctionTag(new ResourceLocation(DefaultNamespace, "load"));
+                if (LoadTag == null)
+                {
+                    EnsureDefaultNamespace();
+                    LoadTag = new FunctionTag(new ResourceLocation(DefaultNamespace, "load"));
+                }
+                LoadTag.Add(function);
             }
-            LoadTag.Add(function);
         }
 
         /// <summary>

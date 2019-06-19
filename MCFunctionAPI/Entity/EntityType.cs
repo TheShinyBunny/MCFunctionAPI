@@ -1,5 +1,6 @@
 ﻿using MCFunctionAPI.Advancements;
 using MCFunctionAPI.Blocks;
+using MCFunctionAPI.Entity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace MCFunctionAPI.Entity
         
 
         private static IDictionary<string, EntityType> Registry;
-        public static EntityType Item = new EntityType("item");
+        public static ModelEntityType<GeneralEntityModel> Item = new ModelEntityType<GeneralEntityModel>("item");
         public static EntityType ExperienceOrb = new EntityType("experience_orb");
         public static EntityType AreaEffectCloud = new EntityType("area_effect_cloud");
         public static EntityType ElderGuardian = new EntityType("elder_guardian");
@@ -42,7 +43,7 @@ namespace MCFunctionAPI.Entity
         public static EntityType ZombieVillager = new EntityType("zombie_villager");
         public static EntityType SkeletonHorse = new EntityType("skeleton_horse");
         public static EntityType ZombieHorse = new EntityType("zombie_horse");
-        public static EntityType ArmorStand = new EntityType("armor_stand");
+        public static ModelEntityType<ArmorStand> ArmorStand = new ModelEntityType<ArmorStand>("armor_stand");
         public static EntityType Donkey = new EntityType("donkey");
         public static EntityType Mule = new EntityType("mule");
         public static EntityType EvokerFangs = new EntityType("evoker_fangs");
@@ -133,7 +134,6 @@ namespace MCFunctionAPI.Entity
             return Get(id, Registry);
         }
 
-        
 
     }
 }

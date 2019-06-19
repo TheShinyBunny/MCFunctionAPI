@@ -264,6 +264,11 @@ namespace MCFunctionAPI
             return this + $"if score {target} {targetObj} matches {matches}";
         }
 
+        public Execute IfData(DataContainer container, string path)
+        {
+            return this + $"if data {container.ToDataCommand()} {path}";
+        }
+
         public Execute Unless(Entities entity)
         {
             return this + $"unless entity {entity}";
@@ -304,6 +309,11 @@ namespace MCFunctionAPI
             return this + $"unless score {ObjectiveBoolean.DEFAULT_PLAYER} {b} = true {ObjectiveBoolean.BOOL_VALUES}";
         }
 
+        public Execute UnlessData(DataContainer container, string path)
+        {
+            return this + $"unless data {container.ToDataCommand()} {path}";
+        }
+
         public Execute Store(Storage @in, string name, Objective objective)
         {
             return this + $"store {@in} score {name} {objective}";
@@ -316,7 +326,7 @@ namespace MCFunctionAPI
 
         public Execute Store(Storage @in, DataContainer container, string path, DataType type, double scale)
         {
-            return this + $"store {@in} {container.ToCommand()} {path} {type} {scale}";
+            return this + $"store {@in} {container.ToDataCommand()} {path} {type} {scale}";
         }
 
         public static Execute operator +(Execute e, string s)

@@ -14,13 +14,13 @@ namespace MCFunctionAPI.Entity
     {
 
         private Target target;
-        public DoubleRange X;
-        public DoubleRange Y;
-        public DoubleRange Z;
+        public double? X;
+        public double? Y;
+        public double? Z;
         public IntRange Distance;
-        public DoubleRange DX;
-        public DoubleRange DY;
-        public DoubleRange DZ;
+        public double? DX;
+        public double? DY;
+        public double? DZ;
         public IntRange Level;
         public IntRange X_Rotation;
         public IntRange Y_Rotation;
@@ -62,11 +62,11 @@ namespace MCFunctionAPI.Entity
 
         public EntitySelector Tag(string tag)
         {
-            Tags.And(tag);
+            Tags.Has(tag);
             return this;
         }
 
-        public EntitySelector Coords(DoubleRange x, DoubleRange y, DoubleRange z)
+        public EntitySelector Coords(double x, double y, double z)
         {
             X = x;
             Y = y;
@@ -74,7 +74,7 @@ namespace MCFunctionAPI.Entity
             return this;
         }
 
-        public EntitySelector Volume(DoubleRange x, DoubleRange y, DoubleRange z)
+        public EntitySelector Volume(double x, double y, double z)
         {
             DX = x;
             DY = y;
@@ -166,6 +166,7 @@ namespace MCFunctionAPI.Entity
             Gamemode.Is(gm);
             return this;
         }
+
 
         public EntitySelector NotInGamemode(Gamemode gm)
         {
@@ -276,13 +277,20 @@ namespace MCFunctionAPI.Entity
         public override string ToString()
         {
             List<string> args = new List<string>();
-            AddArg(args, nameof(X), X);
-            AddArg(args, nameof(Y), Y);
-            AddArg(args, nameof(Z), Z);
+            if (X != null)
+            {
+                args.Add("x=" + X);
+                args.Add("y=" + Y);
+                args.Add("z=" + Y);
+            }
+            
             AddArg(args, nameof(Distance), Distance);
-            AddArg(args, nameof(DX), DX);
-            AddArg(args, nameof(DY), DY);
-            AddArg(args, nameof(DZ), DZ);
+            if (DX != null)
+            {
+                args.Add("dx=" + DX);
+                args.Add("dy=" + DY);
+                args.Add("dz=" + DZ);
+            }
             AddArg(args, nameof(Level), Level);
             AddArg(args, nameof(X_Rotation), X_Rotation);
             AddArg(args, nameof(Y_Rotation), Y_Rotation);
@@ -374,25 +382,25 @@ namespace MCFunctionAPI.Entity
                     switch (key)
                     {
                         case "x":
-                            selector.X = value;
+                            selector.X = double.Parse(value);
                             break;
                         case "y":
-                            selector.Y = value;
+                            selector.Y = double.Parse(value);
                             break;
                         case "z":
-                            selector.Z = value;
+                            selector.Z = double.Parse(value);
                             break;
                         case "distance":
                             selector.Distance = value;
                             break;
                         case "dx":
-                            selector.DX = value;
+                            selector.DX = double.Parse(value);
                             break;
                         case "dy":
-                            selector.DY = value;
+                            selector.DY = double.Parse(value);
                             break;
                         case "dz":
-                            selector.DZ = value;
+                            selector.DZ = double.Parse(value);
                             break;
                         case "level":
                             selector.Level = value;
@@ -419,7 +427,7 @@ namespace MCFunctionAPI.Entity
                                     }
                                     else
                                     {
-                                        selector.Tags.And(value);
+                                        selector.Tag(value);
                                     }
                                     break;
                             }
@@ -718,7 +726,7 @@ namespace MCFunctionAPI.Entity
         public NameArgument(string name)
         {
             this.name = name;
-            not = false;
+            not = name.StartsWith("!");
         }
 
         public NameArgument()
@@ -744,7 +752,7 @@ namespace MCFunctionAPI.Entity
 
         public override string BuildValue()
         {
-            return $"{(not ? "!" : "")}{name}";
+            return $"{(not ? "!" : "")}\"{name}\"";
         }
 
         public static implicit operator NameArgument(string name)
@@ -958,7 +966,7 @@ namespace MCFunctionAPI.Entity
 
         public override IEnumerable<string> Keys => Tags.Count == 0 ? none || any ? new string[] { "" } : new string[0] : Tags.Keys;
 
-        public TagSet And(string tag)
+        public TagSet Has(string tag)
         {
             Tags.Add(tag, true);
             return this;
@@ -981,7 +989,7 @@ namespace MCFunctionAPI.Entity
 
         public static implicit operator TagSet(string tag)
         {
-            return new TagSet().And(tag);
+            return new TagSet().Has(tag);
         }
 
         public TagSet Not(string tag)

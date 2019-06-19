@@ -101,7 +101,7 @@ namespace MCFunctionAPI
             Console.WriteLine("compiling " + Namespace + ": " + path);
             foreach (var m in c.GetMethods())
             {
-                if ((m.DeclaringType == c || m.IsVirtual))
+                if (m.DeclaringType == c || m.IsVirtual)
                 {
                     if (m.GetParameters().Count() == 0 && m.ReturnType == typeof(void))
                     {
@@ -166,15 +166,18 @@ namespace MCFunctionAPI
             }
             if (m.GetCustomAttribute<Load>() != null && Namespace.LoadFunctionPath == null)
             {
-                Namespace.Datapack.CreateLoadTag(id);
-                Namespace.LoadFunctionPath = CurrentPath;
+                if (Namespace.LoadFunctionPath == null)
+                {
+                    Namespace.Datapack.CreateLoadTag(id);
+                    Namespace.LoadFunctionPath = CurrentPath;
+                }
                 foreach (KeyValuePair<ScoreEventHandler,string> h in Namespace.PendingScoreHandlers)
                 {
-                    AppendObjectiveCreation(h.Key, CurrentPath);
+                    AppendObjectiveCreation(h.Key, Namespace.LoadFunctionPath);
                 }
                 foreach (Objective o in Namespace.LoadObjectives)
                 {
-                    AppendObjectiveCreation(new ScoreEventHandler(o.Name, "dummy"), CurrentPath);
+                    AppendObjectiveCreation(new ScoreEventHandler(o.Name, "dummy"), Namespace.LoadFunctionPath);
                 }
 
                 if (Namespace.TickFunctionPath != null)
@@ -262,6 +265,13 @@ namespace MCFunctionAPI
         public static void Space()
         {
             Write0("");
+        }
+
+        public static Objective EnsureAgeObjective()
+        {
+            Objective o = "_age";
+            Namespace.AddLoadObjective(o);
+            return o;
         }
     }
 }

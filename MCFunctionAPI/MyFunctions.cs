@@ -18,7 +18,7 @@ namespace MCFunctionAPI
         {
             SetWeather(Weather.Clear);
             EntitySelector selector = new EntitySelector("@a") { Level = "1..5", Gamemode = 0 };
-            selector.Tags.And("cool");
+            selector.Tags.Has("cool");
             execute.As(selector).Run().Title(TextComponent.Of(Segment.Text("yoooo")));
             RunFunction(BrettyEfes);
             SetBlock("~ ~ ~5", "stone");

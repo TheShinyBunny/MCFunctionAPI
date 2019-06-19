@@ -94,7 +94,7 @@ namespace MCFunctionAPI.Blocks
             FunctionWriter.Write($"data remove block {this} {path}");
         }
 
-        public override string ToCommand()
+        public override string ToDataCommand()
         {
             return "block " + this;
         }

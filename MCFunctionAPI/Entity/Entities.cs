@@ -316,7 +316,7 @@ namespace MCFunctionAPI.Entity
             return "@s";
         }
 
-        public override string ToCommand()
+        public override string ToDataCommand()
         {
             return "entity " + this;
         }
