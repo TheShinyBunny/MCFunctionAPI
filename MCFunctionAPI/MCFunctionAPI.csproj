@@ -70,11 +70,15 @@
     <Compile Include="Color.cs" />
     <Compile Include="CommandWrapper.cs" />
     <Compile Include="DoubleRange.cs" />
+    <Compile Include="Entity\EffectInstance.cs" />
     <Compile Include="EntityModel.cs" />
+    <Compile Include="Entity\EquipmentSlot.cs" />
     <Compile Include="Entity\ModelEntityType.cs" />
     <Compile Include="Entity\Models\ArmorStand.cs" />
+    <Compile Include="Entity\Models\Creeper.cs" />
     <Compile Include="Entity\Models\EntityModelBase.cs" />
     <Compile Include="Entity\Models\GeneralEntityModel.cs" />
+    <Compile Include="Entity\Models\MobModel.cs" />
     <Compile Include="ExtendsNBT.cs" />
     <Compile Include="FunctionContainer.cs" />
     <Compile Include="Datapack.cs" />

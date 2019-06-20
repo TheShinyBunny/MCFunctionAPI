@@ -11,7 +11,7 @@ namespace MCFunctionAPI
 {
 
     /// <summary>
-    /// The main system for writing function files
+    /// The main system for executing function methods and writing them to files
     /// </summary>
     public class FunctionWriter
     {

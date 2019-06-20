@@ -129,20 +129,25 @@ namespace MCFunctionAPI
             return this;
         }
 
+        public T Get<T>(string key)
+        {
+            if (str != null)
+            {
+                return default;
+            }
+            if (map.TryGetValue(key, out object o))
+            {
+                return (T)o;
+            }
+            return default;
+        }
+
 
         public object this[string key]
         {
             get
             {
-                if (str != null)
-                {
-                    return str;
-                }
-                if (map.TryGetValue(key, out object o))
-                {
-                    return o;
-                }
-                return null;
+                return Get<object>(key);
             }
             set
             {

@@ -9,7 +9,7 @@ namespace MCFunctionAPI.Entity.Models
     public class EntityModelBase<T> : EntityModel where T : EntityModelBase<T>
     {
 
-        private T This;
+        protected T This;
 
         public EntityModelBase() : base("_internal_error", null)
         {
@@ -20,6 +20,11 @@ namespace MCFunctionAPI.Entity.Models
         {
             nbt.SetAny(key, obj);
             return This;
+        }
+
+        public R Get<R>(string key)
+        {
+            return nbt.Get<R>(key);
         }
 
         public T With(string tag, EntityType type)
@@ -43,6 +48,16 @@ namespace MCFunctionAPI.Entity.Models
         public T NoGravity()
         {
             return Set("NoGravity", true);
+        }
+
+        public T ShowCustomName()
+        {
+            return Set("CustomNameVisible", true);
+        }
+
+        public T Glowing()
+        {
+            return Set("Glowing", true);
         }
     }
 }

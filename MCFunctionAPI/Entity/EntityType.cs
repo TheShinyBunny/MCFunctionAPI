@@ -59,7 +59,7 @@ namespace MCFunctionAPI.Entity
         public static EntityType TntMinecart = new EntityType("tnt_minecart");
         public static EntityType HopperMinecart = new EntityType("hopper_minecart");
         public static EntityType SpawnerMinecart = new EntityType("spawner_minecart");
-        public static EntityType Creeper = new EntityType("creeper");
+        public static ModelEntityType<Creeper> Creeper = new ModelEntityType<Creeper>("creeper");
         public static EntityType Skeleton = new EntityType("skeleton");
         public static EntityType Spider = new EntityType("spider");
         public static EntityType Giant = new EntityType("giant");

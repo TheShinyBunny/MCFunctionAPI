@@ -334,6 +334,10 @@ namespace MCFunctionAPI
             return e.Append(s);
         }
 
+        /// <summary>
+        /// Returns a string representation of the execute command built in this Execute instance
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (@as != null)
