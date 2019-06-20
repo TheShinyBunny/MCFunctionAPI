@@ -77,13 +77,25 @@ namespace MCFunctionAPI
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
     public class NestedFolder : Attribute
     {
-        public Type SuperType { get; set; }
+        public Type SuperType { get; }
 
         public NestedFolder(Type super)
         {
             SuperType = super;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public class Criteria : Attribute
+    {
+        public string Name { get; }
+
+        public Criteria(string name)
+        {
+            Name = name;
         }
     }
 }

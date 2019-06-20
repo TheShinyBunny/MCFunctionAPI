@@ -28,16 +28,13 @@ namespace MCFunctionAPI
         /// The full path to save this namespace's data
         /// </summary>
         public string Path { get; private set; }
+        public Dictionary<ScoreEventHandler, MCFunction> PendingScoreHandlers = new Dictionary<ScoreEventHandler, MCFunction>();
 
         public static Namespace DefaultNamespace = new Namespace("minecraft");
         public static List<Namespace> Namespaces = new List<Namespace>();
 
-        public string LoadFunctionPath { get; set; }
-        public string TickFunctionPath { get; set; }
-        public List<Objective> LoadObjectives = new List<Objective>();
-        public List<Objective> AddedLoadObjectives = new List<Objective>();
-
-        public Dictionary<ScoreEventHandler,string> PendingScoreHandlers = new Dictionary<ScoreEventHandler,string>();
+        public MCFunction LoadFunction;
+        public MCFunction TickFunction;
 
         public Namespace(Datapack dp, string name)
         {
@@ -110,18 +107,15 @@ namespace MCFunctionAPI
             return tag;
         }
 
-        public void AddLoadObjective(Objective objective)
+        public void AddLoadObjective(Objective objective, string criteria)
         {
-            if (LoadFunctionPath == null)
+
+            if (LoadFunction == null)
             {
-                Datapack.CreateLoadTag(new ResourceLocation(this,"init"));
-                LoadFunctionPath = "init";
+                LoadFunction = new MCFunction(new ResourceLocation(this, "init"));
+                Datapack.CreateLoadTag(LoadFunction.Id);
             }
-            if (!AddedLoadObjectives.Contains(objective))
-            {
-                File.AppendAllLines(Path + "/functions/" + LoadFunctionPath + ".mcfunction", new string[] { $"scoreboard objectives add {objective.Name} dummy" });
-                AddedLoadObjectives.Add(objective);
-            }
+            LoadFunction.AddScoreCreation(objective, criteria);
         }
 
         /// <summary>

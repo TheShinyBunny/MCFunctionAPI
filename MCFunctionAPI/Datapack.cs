@@ -71,7 +71,7 @@ namespace MCFunctionAPI
         /// <param name="function">The function's ResourceLocation to run on reload</param>
         public void CreateLoadTag(ResourceLocation function)
         {
-            if (function.Namespace.LoadFunctionPath == null)
+            if (function.Namespace.LoadFunction == null)
             {
                 if (LoadTag == null)
                 {

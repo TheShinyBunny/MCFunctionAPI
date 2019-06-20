@@ -16,6 +16,14 @@ namespace MCFunctionAPI
 
         public ResourceLocation Id => this;
 
+        public string ParentPath
+        {
+            get
+            {
+                return Path.Substring(0,Path.LastIndexOf('/'));
+            }
+        }
+
         public ResourceLocation(Namespace ns, string path) : this(false,ns,path)
         {
 

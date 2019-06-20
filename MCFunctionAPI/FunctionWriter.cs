@@ -24,13 +24,9 @@ namespace MCFunctionAPI
         /// </summary>
         public static Namespace Namespace;
         /// <summary>
-        /// The lines generated to write into the .mcfunction file
+        /// The current function writing to.
         /// </summary>
-        private static List<string> Lines = new List<string>();
-        /// <summary>
-        /// The currently compiling function's path, including the file name (without extension)
-        /// </summary>
-        private static string CurrentPath;
+        private static MCFunction Function;
         /// <summary>
         /// If true, every new line written to the function container will be inserted to the <see cref="RawLines"/>, instead of <see cref="Lines"/>.
         /// </summary>
@@ -72,14 +68,14 @@ namespace MCFunctionAPI
 
         private static void Write0(string cmd)
         {
-            Console.WriteLine($"[{CurrentPath}] {cmd}");
+            Console.WriteLine($"[{Function.Id}] {cmd}");
             if (GettingRawCommands)
             {
                 RawLines.Add(cmd);
             }
             else
             {
-                Lines.Add(cmd);
+                Function.AddLine(cmd);
             }
         }
 
@@ -98,14 +94,21 @@ namespace MCFunctionAPI
 
         public static void CompileRecursive(Type c, string path)
         {
-            Console.WriteLine("compiling " + Namespace + ": " + path);
+            Console.WriteLine("compiling " + Namespace + ": " + path + " in type " + c);
+            foreach (var f in c.GetRuntimeFields())
+            {
+                if (typeof(Objective) == f.FieldType)
+                {
+                    Namespace.AddLoadObjective((Objective)f.GetValue(null),f.GetCustomAttribute<Criteria>()?.Name);
+                }
+            }
             foreach (var m in c.GetMethods())
             {
                 if (m.DeclaringType == c || m.IsVirtual)
                 {
                     if (m.GetParameters().Count() == 0 && m.ReturnType == typeof(void))
                     {
-                        Compile(c, m, path);
+                        Compile(m, path);
                     }
                 }
             }
@@ -116,103 +119,90 @@ namespace MCFunctionAPI
             }
         }
 
-        public static void Compile(Type c, MethodInfo m, string path)
+        public static void Compile(MethodInfo m, string path)
         {
-            CurrentPath = path + Utils.LowerCase(m.Name);
-            Lines.Clear();
+            ResourceLocation id = new ResourceLocation(Namespace, path + Utils.LowerCase(m.Name));
+            if (m.GetCustomAttribute<Tick>() != null)
+            {
+                if (Namespace.TickFunction == null)
+                {
+                    Namespace.Datapack.CreateTickTag(id);
+                    Namespace.TickFunction = new MCFunction(id);
+                }
+                Function = Namespace.TickFunction;
+                
+                foreach (KeyValuePair<ScoreEventHandler, MCFunction> h in Namespace.PendingScoreHandlers)
+                {
+                    Function.AddScoreTick(h);
+                }
+            }
+            if (m.GetCustomAttribute<Load>() != null)
+            {
+                if (Namespace.LoadFunction == null)
+                {
+                    Namespace.Datapack.CreateLoadTag(id);
+                    Namespace.LoadFunction = new MCFunction(id);
+                }
+                Function = Namespace.LoadFunction;
+
+
+                foreach (KeyValuePair<ScoreEventHandler, MCFunction> h in Namespace.PendingScoreHandlers)
+                {
+                    Function.AddScoreCreation(h);
+                }
+
+            }
+            ScoreEventHandler scoreHandler = m.GetCustomAttribute<ScoreEventHandler>();
+            if (scoreHandler != null)
+            {
+                if (Namespace.LoadFunction == null)
+                {
+                    Namespace.PendingScoreHandlers.Add(scoreHandler, Function);
+                }
+                else
+                {
+                    AppendObjectiveCreation(scoreHandler, Function);
+                }
+
+                if (Namespace.TickFunction == null)
+                {
+                    Namespace.PendingScoreHandlers.Add(scoreHandler, Function);
+                }
+                else
+                {
+                    AppendObjectiveTick(scoreHandler, Function);
+                }
+
+            }
+            
             Desc d = m.GetCustomAttribute<Desc>();
+            Write("#################################################");
+            Write($"# Created on {DateTime.Now.ToShortDateString()}");
             if (d != null)
             {
-                Write("#################################################");
-                Write($"# Created on {DateTime.Now.ToShortDateString()}");
                 if (d.Caller != null)
                 {
                     Write("# Called by: " + d.Caller);
                 }
                 Write("# Description: " + d.Value);
-                Write("#################################################");
-                Write("");
             }
-            object instance = Activator.CreateInstance(c);
-            foreach (FieldInfo f in c.GetFields())
-            {
-                if (typeof(Objective).IsAssignableFrom(f.FieldType))
-                {
-                    Namespace.AddLoadObjective((Objective)f.GetValue(instance));
-                }
-            }
-            
-            m.Invoke(instance, null);
-            if (path != "")
-            {
-                Directory.CreateDirectory(Namespace.Path + "/functions/" + path);
-            }
-            File.WriteAllLines(Namespace.Path + "/functions/" + CurrentPath + ".mcfunction",Lines);
-            ResourceLocation id = new ResourceLocation(Namespace, CurrentPath);
+            Write("#################################################");
+            Write("");
+
+            m.Invoke(null, null);
+            Function.WriteFile();
+
             Execute.Clear();
-            if (m.GetCustomAttribute<Tick>() != null && Namespace.TickFunctionPath == null)
-            {
-                Namespace.Datapack.CreateTickTag(id);
-                Namespace.TickFunctionPath = CurrentPath;
-                foreach (KeyValuePair<ScoreEventHandler, string> h in Namespace.PendingScoreHandlers)
-                {
-                    AppendObjectiveTick(h.Key, h.Value, CurrentPath);
-                }
-                
-                if (Namespace.LoadFunctionPath != null)
-                {
-                    Namespace.PendingScoreHandlers.Clear();
-                }
-            }
-            if (m.GetCustomAttribute<Load>() != null && Namespace.LoadFunctionPath == null)
-            {
-                if (Namespace.LoadFunctionPath == null)
-                {
-                    Namespace.Datapack.CreateLoadTag(id);
-                    Namespace.LoadFunctionPath = CurrentPath;
-                }
-                foreach (KeyValuePair<ScoreEventHandler,string> h in Namespace.PendingScoreHandlers)
-                {
-                    AppendObjectiveCreation(h.Key, Namespace.LoadFunctionPath);
-                }
-                foreach (Objective o in Namespace.LoadObjectives)
-                {
-                    AppendObjectiveCreation(new ScoreEventHandler(o.Name, "dummy"), Namespace.LoadFunctionPath);
-                }
-
-                if (Namespace.TickFunctionPath != null)
-                {
-                    Namespace.PendingScoreHandlers.Clear();
-                }
-            }
-            ScoreEventHandler scoreHandler = m.GetCustomAttribute<ScoreEventHandler>();
-            if (scoreHandler != null)
-            {
-                if (Namespace.LoadFunctionPath == null || Namespace.TickFunctionPath == null)
-                {
-                    Namespace.PendingScoreHandlers.Add(scoreHandler, CurrentPath);
-                }
-
-                if (Namespace.LoadFunctionPath != null)
-                {
-                    AppendObjectiveCreation(scoreHandler, Namespace.LoadFunctionPath);
-                }
-                if (Namespace.TickFunctionPath != null)
-                {
-                    AppendObjectiveTick(scoreHandler, CurrentPath, Namespace.TickFunctionPath);
-                }
-                
-            }
         }
 
-        private static void AppendObjectiveTick(ScoreEventHandler h, string funcPath, string filePath)
+        private static void AppendObjectiveTick(ScoreEventHandler h, MCFunction func)
         {
-            File.AppendAllLines(Namespace.Path + "/functions/" + filePath + ".mcfunction", new string[] { $"execute as @e[scores={{{h.Objective}={h.TargetValue}}}] at @s run function {Namespace}:{funcPath}" });
+            Namespace.TickFunction.AddScoreTick(new KeyValuePair<ScoreEventHandler, MCFunction>(h, func));
         }
 
-        private static void AppendObjectiveCreation(ScoreEventHandler h, string path)
+        private static void AppendObjectiveCreation(ScoreEventHandler h, MCFunction func)
         {
-            File.AppendAllLines(Namespace.Path + "/functions/" + path + ".mcfunction", new string[] { $"scoreboard objectives add {h.Objective} {h.Criteria}" });
+            Namespace.LoadFunction.AddScoreCreation(new KeyValuePair<ScoreEventHandler, MCFunction>(h, func));
         }
 
         public static IEnumerable<string> GetRawCommands()
@@ -270,7 +260,7 @@ namespace MCFunctionAPI
         public static Objective EnsureAgeObjective()
         {
             Objective o = "_age";
-            Namespace.AddLoadObjective(o);
+            Namespace.AddLoadObjective(o,null);
             return o;
         }
     }

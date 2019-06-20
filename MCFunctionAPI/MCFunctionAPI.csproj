@@ -107,6 +107,7 @@
     <Compile Include="LootTables\LootFunction.cs" />
     <Compile Include="LootTables\LootTable.cs" />
     <Compile Include="LootTables\Pool.cs" />
+    <Compile Include="MCFunction.cs" />
     <Compile Include="MyFunctions.cs" />
     <Compile Include="Namespace.cs" />
     <Compile Include="NBT.cs" />
