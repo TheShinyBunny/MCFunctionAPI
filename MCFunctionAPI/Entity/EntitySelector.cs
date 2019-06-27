@@ -906,9 +906,9 @@ namespace MCFunctionAPI.Entity
         }
     }
 
-    public class ScoreSet : SingleArgument
+    public class ScoreSet : SingleArgument, INBTSerializable
     {
-        private IDictionary<Objective, IntRange> Scores;
+        public IDictionary<Objective, IntRange> Scores { get; }
 
         public ScoreSet()
         {
@@ -937,6 +937,16 @@ namespace MCFunctionAPI.Entity
         public override bool ShouldAdd()
         {
             return Scores.Count != 0;
+        }
+
+        public object ToNBT()
+        {
+            NBT nbt = new NBT();
+            foreach (var e in Scores)
+            {
+                nbt.Set(e.Key.Name, e.Value);
+            }
+            return nbt;
         }
 
         public static implicit operator ScoreSet(string s)

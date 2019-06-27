@@ -1,4 +1,6 @@
-﻿using MCFunctionAPI.Blocks;
+﻿using MCFunctionAPI.Advancements;
+using MCFunctionAPI.Blocks;
+using MCFunctionAPI.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace MCFunctionAPI.LootTables
             return new Condition().Set("condition", id);
         }
 
-        public static Condition Alternative(List<Condition> terms)
+        public static Condition Alternative(params Condition[] terms)
         {
             return New("alternative").Set("terms", terms);
         }
@@ -34,9 +36,26 @@ namespace MCFunctionAPI.LootTables
 
         public static Condition KilledByPlayer = New("killed_by_player");
 
-        public static Condition MatchTool(ItemPredicate item)
+        public static Condition MatchTool(ItemCondition item)
         {
             return New("match_tool").Set("predicate", item);
+        }
+
+        public static Condition Inverted(Condition cond)
+        {
+            return New("inverted").Set("term", cond);
+        }
+
+        public static Condition LocationCheck(LocationCondition loc)
+        {
+            return New("location_check").Set("predicate", loc);
+        }
+
+        public static Condition SurvivesExplosion = New("survives_explosion");
+
+        public static Condition EntityScores(Source entity, ScoreSet scores)
+        {
+            return New("entity_scores").Set("entity", Utils.LowerCase(entity.ToString())).Set("scores", scores);
         }
     }
 }

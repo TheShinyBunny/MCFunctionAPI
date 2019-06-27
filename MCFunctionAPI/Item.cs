@@ -1,4 +1,5 @@
-﻿using MCFunctionAPI.Tags;
+﻿using MCFunctionAPI.Advancements;
+using MCFunctionAPI.Tags;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,38 +79,6 @@ namespace MCFunctionAPI
         public Item SetBlockContainerItems(IList<Item> items)
         {
             return SetProperty("BlockEntityTag.Items", items);
-        }
-
-        public static ItemPredicate Predicate
-        {
-            get
-            {
-                return new ItemPredicate();
-            }
-        }
-    }
-
-    public class ItemPredicate : INBTSerializable
-    {
-
-        private NBT nbt = new NBT();
-
-        public ItemPredicate EnchantedWith(params EnchantmentPredicate[] enchants)
-        {
-            nbt.Set("enchantments", enchants);
-            return this;
-        }
-
-        public ItemPredicate Is(Item item)
-        {
-            nbt.Set("item", item.Id);
-            nbt.Set("nbt", item.nbt);
-            return this;
-        }
-
-        public object ToNBT()
-        {
-            return nbt;
         }
     }
 }
