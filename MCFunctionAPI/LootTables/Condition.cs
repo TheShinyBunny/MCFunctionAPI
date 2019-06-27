@@ -34,5 +34,9 @@ namespace MCFunctionAPI.LootTables
 
         public static Condition KilledByPlayer = New("killed_by_player");
 
+        public static Condition MatchTool(ItemPredicate item)
+        {
+            return New("match_tool").Set("predicate", item);
+        }
     }
 }

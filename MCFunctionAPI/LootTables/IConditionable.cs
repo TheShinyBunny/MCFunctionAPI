@@ -42,6 +42,12 @@ namespace MCFunctionAPI.LootTables
             return this as This;
         }
 
+        public This UsedTool(ItemPredicate item)
+        {
+            AddCondition(Condition.MatchTool(item));
+            return this as This;
+        }
+
         public abstract void AddCondition(Condition c);
 
     }

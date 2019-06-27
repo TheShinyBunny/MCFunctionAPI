@@ -13,6 +13,11 @@ namespace MCFunctionAPI.LootTables
             return new LootFunction().Set("function", id);
         }
 
+        public static LootFunction ApplyBonus(Enchantment ench, BonusFormula formula)
+        {
+            return New("apply_bonus").Set("enchantment", ench).MergeWith(formula.ToNBT() as NBT);
+        }
+
         public static LootFunction CopyName = New("copy_name").Set("source", "block_entity");
 
         public static LootFunction CopyNBT(NBTSource source, params NBTOp[] ops)
@@ -128,6 +133,35 @@ namespace MCFunctionAPI.LootTables
         This,
         Killer,
         KillerPlayer
+    }
+
+    public class BonusFormula : INBTSerializable
+    {
+        private string name;
+        private NBT parameters;
+
+        public static readonly BonusFormula OreDrops = new BonusFormula("ore_drops", null);
+
+        public static BonusFormula BinomialWithBonusCount(int extra, float probability)
+        {
+            return new BonusFormula("binomial_with_bonus_count", new NBT().Set("extra", extra).Set("probability", probability));
+        }
+
+        public static BonusFormula UniformBonusCount(float bonusMultiplier)
+        {
+            return new BonusFormula("uniform_bonus_count", new NBT().Set("bonusMultiplier", bonusMultiplier));
+        }
+
+        private BonusFormula(string name, NBT parameters)
+        {
+            this.name = name;
+            this.parameters = parameters;
+        }
+
+        public object ToNBT()
+        {
+            return new NBT().Set("formula", name).Set("parameters",parameters);
+        }
     }
 
 }

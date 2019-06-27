@@ -85,6 +85,12 @@ namespace MCFunctionAPI
             set => del[key] = value;
         }
 
+        public This MergeWith(NBT nbt)
+        {
+            del.MergeWith(nbt);
+            return this as This;
+        }
+
         public override string ToString()
         {
             return del.ToString();

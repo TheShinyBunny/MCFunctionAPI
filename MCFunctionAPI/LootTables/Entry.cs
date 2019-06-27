@@ -1,5 +1,6 @@
 ﻿using MCFunctionAPI.Tags;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace MCFunctionAPI.LootTables
         /// The name of the component to use in the pool, depends on the <see cref="Type"/>
         /// </summary>
         public ResourceLocation Name { get; set; }
-        public Entry[] Children { get; set; }
+        public List<Entry> Children = new List<Entry>();
         /// <summary>
         /// For <see cref="EntryType.Tag"/>, if set to true, it chooses one item of the tag, each with the same weight and quality. If false, it uses all the items in the tag.
         /// </summary>
@@ -46,22 +47,24 @@ namespace MCFunctionAPI.LootTables
         /// Creates an item entry
         /// </summary>
         /// <param name="item">The item ID to generate</param>
-        public Entry(Item item)
+        public Entry(Item item) : this(EntryType.Item)
         {
-            this.Type = EntryType.Item;
             Name = item.Id;
         }
 
-        public Entry(ItemTag tag)
+        public Entry(ItemTag tag) : this(EntryType.Tag)
         {
-            this.Type = EntryType.Tag;
             Name = tag.Id;
         }
 
-        public Entry(Namespace ns, LootTable lootTable)
+        public Entry(Namespace ns, LootTable lootTable) : this(EntryType.LootTable)
         {
-            this.Type = EntryType.LootTable;
             Name = new ResourceLocation(ns, Namespace.GetLootTableTypeDir(lootTable.Type) + "/" + lootTable.Name);
+        }
+
+        protected Entry(EntryType type)
+        {
+            this.Type = type;
         }
 
         public override void AddFunction(LootFunction f)
@@ -74,7 +77,7 @@ namespace MCFunctionAPI.LootTables
             Conditions.Add(c);
         }
 
-        public object ToNBT()
+        public virtual object ToNBT()
         {
             return new NBT().Set("type", Utils.LowerCase(Type.ToString())).Set("name",Name).Set("conditions", Utils.NullIfEmpty(Conditions)).Set("expand", Type == EntryType.Tag ? Expand : (bool?)null).Set("functions", Utils.NullIfEmpty(Functions)).Set("weight", Weight == 0 ? (int?)null : Weight).Set("quality", Quality == 0 ? (int?)null : Quality);
         }
@@ -90,5 +93,32 @@ namespace MCFunctionAPI.LootTables
         Sequence,
         Group,
         LootTable
+    }
+
+    public class AlternativeEntries : Entry, IEnumerable<Entry>
+    {
+        public AlternativeEntries() : base(EntryType.Alternatives)
+        {
+        }
+
+        public void Add(Entry e)
+        {
+            Children.Add(e);
+        }
+
+        public IEnumerator<Entry> GetEnumerator()
+        {
+            return Children.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public override object ToNBT()
+        {
+            return (base.ToNBT() as NBT).Set("children", Children);
+        }
     }
 }

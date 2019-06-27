@@ -17,9 +17,7 @@ namespace MCFunctionAPI
         static void Main(string[] args)
         {
             Program p = new Program();
-            Namespace main = p.CreateNamespace("main");
-            main.AddFunctions(typeof(MyFunctions));
-             
+             /*
             Advancement test = new Advancement("main:mytab/test")
             {
                 Title = "Pig Breeder",
@@ -44,7 +42,7 @@ namespace MCFunctionAPI
             });
 
 
-            LootTable skeleton = new LootTable("skeleton",TableType.Entity)
+            LootTable skeleton = new LootTable("skeleton", TableType.Entity)
             {
                 new Pool()
                 {
@@ -60,17 +58,34 @@ namespace MCFunctionAPI
                 }
             };
             p.AddVanillaLootTable(skeleton);
+            */
 
+            /*LootTable redstoneOre = new LootTable("redstone_ore", TableType.Block)
+            {
+                new Pool()
+                {
+                    new AlternativeEntries()
+                    {
+                        new Entry("redstone_ore").UsedTool(Item.Predicate.EnchantedWith(Enchantment.SilkTouch.Levels(1))),
+                        new Entry("redstone").SetCount("4..5").ApplyBonus(Enchantment.Fortune,BonusFormula.UniformBonusCount(1)).ExplosionDecay()
+                    }
+                },
+                new Pool()
+                {
+                    new Entry("phantom_membrane").RandomChance(0.02f,0.02f)
+                }
+            };
+            p.AddVanillaLootTable(redstoneOre);*/
         }
 
         public override string GetDescription()
         {
-            return "Hello World";
+            return "A simple datapack to make Redstone Ore rarely drop Ruby";
         }
 
         public override string GetName()
         {
-            return "test";
+            return "Ruby";
         }
     }
 }

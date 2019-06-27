@@ -67,6 +67,27 @@ namespace MCFunctionAPI
             return Get(id, Registry);
         }
 
+        public EnchantmentPredicate Levels(IntRange levels)
+        {
+            return new EnchantmentPredicate(this, levels);
+        }
 
+    }
+
+    public class EnchantmentPredicate : INBTSerializable
+    {
+        private Enchantment ench;
+        private IntRange levels;
+
+        public EnchantmentPredicate(Enchantment ench, IntRange levels)
+        {
+            this.ench = ench;
+            this.levels = levels;
+        }
+
+        public object ToNBT()
+        {
+            return new NBT().Set("enchantment", ench).Set("levels", levels);
+        }
     }
 }

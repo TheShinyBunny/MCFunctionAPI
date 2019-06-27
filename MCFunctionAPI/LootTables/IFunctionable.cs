@@ -3,6 +3,12 @@
     public abstract class IFunctionable<This> : IConditionable<This> where This : IFunctionable<This>
     {
 
+        public This ApplyBonus(Enchantment ench, BonusFormula formula)
+        {
+            AddFunction(LootFunction.ApplyBonus(ench, formula));
+            return this as This;
+        }
+
         public This CopyTileName()
         {
             AddFunction(LootFunction.CopyName);

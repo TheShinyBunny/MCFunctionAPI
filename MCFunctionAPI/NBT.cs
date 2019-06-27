@@ -158,6 +158,15 @@ namespace MCFunctionAPI
             }
         }
 
+        public NBT MergeWith(NBT nbt)
+        {
+            foreach (var e in nbt.map)
+            {
+                map.Add(e);
+            }
+            return this;
+        }
+
         public override string ToString()
         {
             return ToString(false,false);
