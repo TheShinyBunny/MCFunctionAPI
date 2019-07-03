@@ -20,7 +20,17 @@ namespace MCFunctionAPI
         {
             get
             {
-                return Path.Substring(0,Path.LastIndexOf('/'));
+                int i = Path.LastIndexOf('/');
+                return i > 1 ? Path.Substring(0, i) : "";
+            }
+        }
+
+        public string Last
+        {
+            get
+            {
+                int i = Path.LastIndexOf('/');
+                return Path.Substring(i + 1);
             }
         }
 

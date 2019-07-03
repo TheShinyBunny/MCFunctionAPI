@@ -1,4 +1,5 @@
-﻿using MCFunctionAPI.Blocks;
+﻿using MCFunctionAPI.Advancements;
+using MCFunctionAPI.Blocks;
 using MCFunctionAPI.Entity;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace MCFunctionAPI.LootTables
         /// </summary>
         /// <param name="item">Predicate for the item used</param>
         /// <returns></returns>
-        public This UsedTool(ItemPredicate item)
+        public This UsedTool(ItemCondition item)
         {
             AddCondition(Condition.MatchTool(item));
             return this as This;
@@ -83,9 +84,33 @@ namespace MCFunctionAPI.LootTables
             return this as This;
         }
 
+        public This CheckLocation(LocationCondition loc)
+        {
+            AddCondition(Condition.LocationCheck(loc));
+            return this as This;
+        }
+
         public This TestScore(Source entity, ScoreSet scores)
         {
             AddCondition(Condition.EntityScores(entity, scores));
+            return this as This;
+        }
+
+        public This BonusTable(Enchantment ench, params float[] chances)
+        {
+            AddCondition(Condition.TableBonus(ench, chances));
+            return this as This;
+        }
+
+        public This HasEnchantments(params EnchantmentPredicate[] enchants)
+        {
+            AddCondition(Condition.ToolEnchantment(enchants));
+            return this as This;
+        }
+
+        public This CheckWeather(bool raining, bool thundering)
+        {
+            AddCondition(Condition.WeatherCheck(raining, thundering));
             return this as This;
         }
 

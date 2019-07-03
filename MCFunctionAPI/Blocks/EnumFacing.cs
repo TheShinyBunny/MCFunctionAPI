@@ -30,7 +30,7 @@ namespace MCFunctionAPI.Blocks
         {
             get
             {
-                switch(id)
+                switch(Id)
                 {
                     case "south":
                         return 0;
@@ -58,7 +58,7 @@ namespace MCFunctionAPI.Blocks
         
         public static implicit operator string(EnumFacing facing)
         {
-            return facing.id;
+            return facing.Id;
         }
     }
 }

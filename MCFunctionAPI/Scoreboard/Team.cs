@@ -49,7 +49,7 @@ namespace MCFunctionAPI.Scoreboard
                 FunctionWriter.Write($"team modify {this} friendlyFire {value}");
             }
         }
-        public Color Color
+        public ChatColor Color
         {
             set
             {

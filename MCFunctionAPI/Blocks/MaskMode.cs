@@ -13,17 +13,12 @@ namespace MCFunctionAPI.Blocks
         public static MaskMode Replace = new MaskMode("replace");
         public static FilteredMode Filtered = new FilteredMode();
 
-        private static Dictionary<string, MaskMode> Registry;
+        private static IDictionary<string, MaskMode> Registry;
 
         public MaskMode(string id) : base(id)
         {
             if (Registry == null) Registry = new Dictionary<string, MaskMode>();
             Registry.Add(id, this);
-        }
-
-        private MaskMode() : base("")
-        {
-
         }
 
         public static implicit operator MaskMode(string id)
@@ -32,7 +27,7 @@ namespace MCFunctionAPI.Blocks
             {
                 return Filtered.With(Block.Parse(id.Substring(id.IndexOf(' '))));
             }
-            return Get(id, Registry);
+            return Get(id,Registry);
         }
 
         public class FilteredMode
@@ -49,7 +44,7 @@ namespace MCFunctionAPI.Blocks
 
             public Block filter;
 
-            public Filter(Block b)
+            public Filter(Block b): base("filtered")
             {
                 this.filter = b;
             }

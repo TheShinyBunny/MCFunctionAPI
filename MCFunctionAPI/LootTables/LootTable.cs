@@ -10,7 +10,7 @@ namespace MCFunctionAPI.LootTables
     public class LootTable : IEnumerable<Pool>
     {
 
-        public string Name;
+        public string Name { get; }
         public TableType Type { get; set; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace MCFunctionAPI.LootTables
         /// </summary>
         /// <param name="name">The name of the loot table. Will be used as the file's name</param>
         /// <param name="type">The type of loot table. Used to determine the loot_tables sub directory to place the loot table file</param>
-        public LootTable(string name, TableType type)
+        public LootTable(string name, TableType type = TableType.Generic)
         {
             this.Name = name;
             this.Type = type;
@@ -49,6 +49,12 @@ namespace MCFunctionAPI.LootTables
         {
             return GetEnumerator();
         }
+
+        public static implicit operator LootTable(string id)
+        {
+            return new LootTable(id);
+        }
+
     }
 
     public enum TableType

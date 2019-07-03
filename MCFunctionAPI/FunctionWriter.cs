@@ -104,9 +104,9 @@ namespace MCFunctionAPI
             }
             foreach (var m in c.GetMethods())
             {
-                if (m.DeclaringType == c || m.IsVirtual)
+                if (m.DeclaringType == c || (m.IsVirtual && typeof(FunctionContainer).IsAssignableFrom(m.DeclaringType)))
                 {
-                    if (m.GetParameters().Count() == 0 && m.ReturnType == typeof(void))
+                    if (m.GetParameters().Count() == 0 || m.GetCustomAttribute<Expand>() != null)
                     {
                         Compile(m, path);
                     }
@@ -121,16 +121,38 @@ namespace MCFunctionAPI
 
         public static void Compile(MethodInfo m, string path)
         {
+            Console.WriteLine("Compiling method " + m.DeclaringType + " " + m);
+            Expand e = m.GetCustomAttribute<Expand>();
+            if (e != null)
+            {
+                foreach (string s in e.All)
+                {
+                    Function = new MCFunction(new ResourceLocation(Namespace, path + Utils.LowerCase(m.Name) + "/" + s));
+                    if (m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string))
+                    {
+                        m.Invoke(null, new object[] { s });
+
+                    } else
+                    {
+                        m.Invoke(null, null);
+                    }
+                    
+                    Function.WriteFile();
+                    Execute.Clear();
+                }
+                return;
+            }
             ResourceLocation id = new ResourceLocation(Namespace, path + Utils.LowerCase(m.Name));
+            Function = new MCFunction(id);
             if (m.GetCustomAttribute<Tick>() != null)
             {
                 if (Namespace.TickFunction == null)
                 {
                     Namespace.Datapack.CreateTickTag(id);
-                    Namespace.TickFunction = new MCFunction(id);
+                    Namespace.TickFunction = Function;
                 }
                 Function = Namespace.TickFunction;
-                
+
                 foreach (KeyValuePair<ScoreEventHandler, MCFunction> h in Namespace.PendingScoreHandlers)
                 {
                     Function.AddScoreTick(h);
@@ -141,7 +163,7 @@ namespace MCFunctionAPI
                 if (Namespace.LoadFunction == null)
                 {
                     Namespace.Datapack.CreateLoadTag(id);
-                    Namespace.LoadFunction = new MCFunction(id);
+                    Namespace.LoadFunction = Function;
                 }
                 Function = Namespace.LoadFunction;
 
@@ -153,6 +175,11 @@ namespace MCFunctionAPI
 
             }
             ScoreEventHandler scoreHandler = m.GetCustomAttribute<ScoreEventHandler>();
+            ScoreTrigger trigger = m.GetCustomAttribute<ScoreTrigger>();
+            if (trigger != null)
+            {
+                scoreHandler = new ScoreEventHandler(trigger.Objective ?? Utils.LowerCase(m.Name), "trigger", trigger.Range);
+            }
             if (scoreHandler != null)
             {
                 if (Namespace.LoadFunction == null)
@@ -175,6 +202,7 @@ namespace MCFunctionAPI
 
             }
             
+            
             Desc d = m.GetCustomAttribute<Desc>();
             Write("#################################################");
             Write($"# Created on {DateTime.Now.ToShortDateString()}");
@@ -189,7 +217,30 @@ namespace MCFunctionAPI
             Write("#################################################");
             Write("");
 
-            m.Invoke(null, null);
+            
+            object returnValue = m.Invoke(null, null);
+
+            GiveItem give = m.GetCustomAttribute<GiveItem>();
+            if (give != null && returnValue != null)
+            {
+                if (returnValue is Item)
+                {
+                    Function.AddLine("give @s " + returnValue);
+                } else if (returnValue is IEnumerable<Item> items)
+                {
+                    if (give.Container == null)
+                    {
+                        foreach (var i in items)
+                        {
+                            Function.AddLine("give @s " + i);
+                        }
+                    } else
+                    {
+                        Function.AddLine("give @s " + Item.Of(give.Container).SetBlockContainerItems(items));
+                    }
+                }
+            }
+
             Function.WriteFile();
 
             Execute.Clear();
@@ -216,12 +267,17 @@ namespace MCFunctionAPI
             }
         }
 
-        public static string GetFunctionPath(CommandWrapper.Function f)
+        public static ResourceLocation GetFunctionPath(Namespace ns, CommandWrapper.Function f)
         {
-            return GetFunctionPath(f, f.Method.DeclaringType);
+            return GetFunctionPath(ns, f, f.Method.DeclaringType);
         }
 
-        public static string GetFunctionPath(CommandWrapper.Function f, Type directImplementator)
+        public static ResourceLocation GetFunctionPath(Namespace ns, CommandWrapper.ParameterFunction pf, string param)
+        {
+            return GetFunctionPath(ns, pf, pf.Method.DeclaringType, param);
+        }
+
+        public static ResourceLocation GetFunctionPath(Namespace ns, Delegate f, Type directImplementator, string param = null)
         {
             string path = "";
             Type subFolder = directImplementator;
@@ -249,7 +305,11 @@ namespace MCFunctionAPI
                 }
             }
             path += Utils.LowerCase(f.Method.Name);
-            return Namespace + ":" + path;
+            if (f.Method.GetCustomAttribute<Expand>() != null && param != null)
+            {
+                path += "/" + param;
+            }
+            return new ResourceLocation(ns, path);
         }
 
         public static void Space()

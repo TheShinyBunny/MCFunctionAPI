@@ -55,6 +55,11 @@ namespace MCFunctionAPI
             return nbt;
         }
 
+        public NBT Slotted(int slot)
+        {
+            return (ToNBT() as NBT).Set("Slot", (byte)slot);
+        }
+
         public Item SetDisplayName(string displayName)
         {
             return SetProperty("display.Name", "{\\\"text\\\":\\\"" + displayName + "\\\",\\\"italic\\\":false}");
@@ -76,9 +81,11 @@ namespace MCFunctionAPI
             return SetProperty("BlockEntityTag", tag);
         }
 
-        public Item SetBlockContainerItems(IList<Item> items)
+        public Item SetBlockContainerItems(IEnumerable<Item> items)
         {
-            return SetProperty("BlockEntityTag.Items", items);
+            return SetProperty("BlockEntityTag.Items", items.Select((item,i)=>item.Slotted(i)));
         }
+
+        public static ItemCondition Predicate => new ItemCondition();
     }
 }

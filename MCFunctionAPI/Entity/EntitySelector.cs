@@ -547,7 +547,7 @@ namespace MCFunctionAPI.Entity
 
         public override string BuildValue(int k)
         {
-            return Type == null ? "!" + not.ElementAt(k).id : Type.id;
+            return Type == null ? "!" + not.ElementAt(k).Id : Type.Id;
         }
 
         public override IEnumerable<int> Keys => Type == null ? from t in not select not.IndexOf(t) : new int[] { 0 };

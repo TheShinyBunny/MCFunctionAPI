@@ -65,6 +65,12 @@ namespace MCFunctionAPI
             return this as This;
         }
 
+        public This Set(string key, float[] value)
+        {
+            del.Set(key, value);
+            return this as This;
+        }
+
         public This Set<T>(string key, IList<T> list) where T : INBTSerializable
         {
             del.Set(key, list);

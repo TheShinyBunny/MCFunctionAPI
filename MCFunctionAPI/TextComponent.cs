@@ -81,9 +81,9 @@ namespace MCFunctionAPI
             return (Segment)new Segment().Set("keybind", key);
         }
 
-        public Segment Color(Color color)
+        public Segment Color(ChatColor color)
         {
-            return (Segment)Set("color", color.id);
+            return (Segment)Set("color", color.Id);
         }
 
         public Segment Bold()

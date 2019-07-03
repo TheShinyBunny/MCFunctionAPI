@@ -380,7 +380,7 @@ namespace MCFunctionAPI
 
         public static implicit operator string(DataType type)
         {
-            return type.id;
+            return type.Id;
         }
     }
 

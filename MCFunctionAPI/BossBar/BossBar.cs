@@ -33,7 +33,7 @@ namespace MCFunctionAPI.BossBar
                 FunctionWriter.Write($"bossbar set {this} name {value}");
             }
         }
-        public Color Color
+        public ChatColor Color
         {
             set
             {

@@ -41,6 +41,7 @@ namespace MCFunctionAPI
             Directory.CreateDirectory(Id.Namespace.Path + "/functions/" + Id.ParentPath);
             File.WriteAllLines(Id.Namespace.Path + "/functions/" + Id.Path + ".mcfunction",Lines);
             written = true;
+            Lines.Clear();
         }
 
         public void AddScoreTick(KeyValuePair<ScoreEventHandler, MCFunction> e)

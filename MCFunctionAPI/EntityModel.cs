@@ -26,7 +26,7 @@ namespace MCFunctionAPI
 
         public void Create(Position pos)
         {
-            CommandWrapper.Summon(type, pos, nbt.Copy().Set("Tags",new string[] {tag}));
+            FunctionWriter.Write($"summon {type} {pos} {nbt.Copy().Set("Tags",new string[] {tag})}");
         }
 
         public void Create(Position pos, Action<Entities> action)

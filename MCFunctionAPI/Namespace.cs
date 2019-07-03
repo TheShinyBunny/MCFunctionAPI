@@ -1,4 +1,5 @@
-﻿using MCFunctionAPI.Blocks;
+﻿using MCFunctionAPI.Advancements;
+using MCFunctionAPI.Blocks;
 using MCFunctionAPI.LootTables;
 using MCFunctionAPI.Scoreboard;
 using MCFunctionAPI.Tags;
@@ -134,6 +135,13 @@ namespace MCFunctionAPI
             }
         }
 
+        public void AddAdvancement(Advancement advancement)
+        {
+            string path = Path + "/advancements/" + advancement.Id.ParentPath;
+            Directory.CreateDirectory(path);
+            File.WriteAllText(path + "/" + advancement.Id.Last + ".json",advancement.ToJson());
+        }
+
         public static string GetLootTableTypeDir(TableType type)
         {
             switch (type)
@@ -150,6 +158,14 @@ namespace MCFunctionAPI
                     return "chests";
             }
             return null;
+        }
+
+        public ResourceLocation this[string path]
+        {
+            get
+            {
+                return new ResourceLocation(this, path);
+            }
         }
     }
 }

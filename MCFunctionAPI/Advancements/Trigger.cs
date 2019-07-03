@@ -8,89 +8,168 @@ using System.Threading.Tasks;
 namespace MCFunctionAPI.Advancements
 {
 
-    public interface ITrigger
+    public abstract class IBaseTriggerBuilder
     {
-        ResourceLocation Id { get; }
+        public Advancement MakeAdvancement(ResourceLocation id,
+            TextComponent title = null,
+            TextComponent description = null,
+            Item icon = null,
+            FrameType frame = FrameType.Task,
+            bool toast = true,
+            bool chat = true,
+            bool hide = false,
+            Advancement parent = null,
+            Reward reward = null)
+        {
+            return Create(Advancement.Build(id, title, description, icon, frame, toast, chat, hide, parent, reward));
+        }
 
-        NBT RunEvent();
-        
+        public void RunFunction(Advancement a, Namespace ns, CommandWrapper.Function f)
+        {
+            a.Reward = Reward.Function(ns, f);
+            Create(a);
+        }
+
+        public void RunFunction(Advancement a, Namespace ns, CommandWrapper.ParameterFunction f, string param)
+        {
+            a.Reward = Reward.Function(ns, f, param);
+            Create(a);
+        }
+
+        public abstract Advancement Create(Advancement a);
     }
 
-    public abstract class Trigger<D> : ITrigger where D : Delegate
+    public abstract class Trigger : OrTriggerList, INBTSerializable
     {
-
-        protected D del;
-        private string name;
-
         public abstract ResourceLocation Id { get; }
 
-        public Trigger(D del)
+        public abstract NBT ToNBT();
+
+        public abstract string SuggestName();
+
+        public static PlacedBlock OnPlacedBlock(Block b = null, ItemCondition used = null, LocationCondition location = null)
         {
-            this.del = del;
+            return new PlacedBlock(b, used, location);
         }
 
-        public Trigger(string name, D del)
+        object INBTSerializable.ToNBT()
         {
-            this.name = name;
-            this.del = del;
+            return ToNBT();
         }
 
-        public void SetName(string name)
+        public static OrTriggerList OneOf(params Trigger[] triggers)
         {
-            if (name == null)
-            {
-                this.name = name;
-            }
+            return new OrTriggerList(triggers);
         }
 
-        public string GetName()
+        public static AndTriggerList AllOf(params OrTriggerList[] triggers)
         {
-            return name;
+            return new AndTriggerList(triggers);
         }
 
-        public abstract NBT RunEvent();
+        public override Trigger[] GetTriggers()
+        {
+            return new Trigger[] { this };
+        }
+
+        public override Advancement Create(Advancement a)
+        {
+            return a.AddTrigger(this).Create();
+        }
     }
-    
 
-    public delegate void OnBreedAnimals(EntityCondition child, EntityCondition parent, EntityCondition partner);
-
-    public class AnimalsBredTrigger : Trigger<OnBreedAnimals>
+    public class OrTriggerList : IBaseTriggerBuilder
     {
-        public AnimalsBredTrigger(OnBreedAnimals del) : base(del)
-        {
 
+        private Trigger[] triggers;
+
+        public OrTriggerList(params Trigger[] triggers)
+        {
+            this.triggers = triggers;
         }
 
-        public AnimalsBredTrigger(string name, OnBreedAnimals del) : base(name,del)
+        public virtual Trigger[] GetTriggers()
         {
-
+            return triggers;
         }
+        
 
-        public override ResourceLocation Id => "bred_animals";
-
-        public override NBT RunEvent()
+        public override Advancement Create(Advancement a)
         {
-            EntityCondition child = new EntityCondition();
-            EntityCondition parent = new EntityCondition();
-            EntityCondition partner = new EntityCondition();
-            del(child, parent, partner);
-            SetName("bred_" + (child.Type == null ? "animal" : child.Type.id));
-            return new NBT().Set("child", child).Set("parent", parent).Set("partner", partner);
+            return a.OneOf(triggers).Create();
         }
     }
 
-    public class AnimalsBred : ITrigger
+    public class AndTriggerList : IBaseTriggerBuilder
+    {
+
+        private OrTriggerList[] triggers;
+
+        public AndTriggerList(params OrTriggerList[] triggers)
+        {
+            this.triggers = triggers;
+        }
+
+        public override Advancement Create(Advancement a)
+        {
+            foreach (OrTriggerList or in triggers)
+            {
+                a.OneOf(or.GetTriggers());
+            }
+            return a.Create();
+        }
+    }
+
+    public class AnimalsBred : Trigger
     {
         public EntityCondition Child { get; set; }
         public EntityCondition Parent { get; set; }
         public EntityCondition Partner { get; set; }
 
-        public ResourceLocation Id => "animals_bred";
+        public AnimalsBred(EntityCondition child = null, EntityCondition parent = null, EntityCondition partner = null)
+        {
+            Child = child;
+            Parent = parent;
+            Partner = partner;
+        }
 
-        public NBT RunEvent()
+        public override ResourceLocation Id => "animals_bred";
+
+        public override string SuggestName()
+        {
+            return Parent != null && Parent.Type != null ? "bred_" + Parent.Type.Id : null;
+        }
+
+        public override NBT ToNBT()
         {
             return new NBT().Set("child", Child).Set("parent", Parent).Set("partner",Partner);
         }
     }
-    
+
+    public class PlacedBlock : Trigger
+    {
+        public override ResourceLocation Id => "placed_block";
+
+        public Block Block { get; set; }
+        public ItemCondition ItemUsed { get; set; }
+        public LocationCondition Location { get; set; }
+
+        public PlacedBlock(Block block = null, ItemCondition itemUsed = null, LocationCondition location = null)
+        {
+            Block = block;
+            ItemUsed = itemUsed;
+            Location = location;
+        }
+
+        public override string SuggestName()
+        {
+            return Block == null ? null : "placed_" + Block.Id.Path;
+        }
+
+        public override NBT ToNBT()
+        {
+            return new NBT().Set("block", Block?.Id).Set("item", ItemUsed).Set("location", Location).Set("state", Block?.state);
+        }
+    }
+
 }

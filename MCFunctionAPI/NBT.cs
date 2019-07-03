@@ -84,24 +84,24 @@ namespace MCFunctionAPI
             return SetAny(key, stringList);
         }
 
-        public NBT Set(string key, IList<int> stringList)
+        public NBT Set(string key, IList<int> intList)
         {
-            return SetAny(key, stringList);
+            return SetAny(key, intList);
         }
 
-        public NBT Set(string key, IList<double> stringList)
+        public NBT Set(string key, IList<double> doubleList)
         {
-            return SetAny(key, stringList);
+            return SetAny(key, doubleList);
         }
 
-        public NBT Set(string key, IList<float> stringList)
+        public NBT Set(string key, IList<float> floatList)
         {
-            return SetAny(key, stringList);
+            return SetAny(key, floatList);
         }
 
-        public NBT Set(string key, IList<byte> stringList)
+        public NBT Set(string key, IList<byte> byteList)
         {
-            return SetAny(key, stringList);
+            return SetAny(key, byteList);
         }
 
         public NBT SetAny(string key, object value)

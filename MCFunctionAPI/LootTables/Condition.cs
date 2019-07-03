@@ -57,5 +57,20 @@ namespace MCFunctionAPI.LootTables
         {
             return New("entity_scores").Set("entity", Utils.LowerCase(entity.ToString())).Set("scores", scores);
         }
+
+        public static Condition TableBonus(Enchantment ench, float[] chances)
+        {
+            return New("table_bonus").Set("enchantment", ench).Set("chances", chances);
+        }
+
+        public static Condition ToolEnchantment(params EnchantmentPredicate[] enchants)
+        {
+            return New("tool_enchantment").Set("enchantments", enchants);
+        }
+
+        public static Condition WeatherCheck(bool raining, bool thundering)
+        {
+            return New("weather_check").Set("raining", raining).Set("thundering", thundering);
+        }
     }
 }

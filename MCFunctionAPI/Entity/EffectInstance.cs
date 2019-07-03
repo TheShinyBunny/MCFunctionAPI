@@ -28,7 +28,7 @@ namespace MCFunctionAPI.Entity
 
         public object ToNBT()
         {
-            return new NBT().Set("Id", Effect.id).Set("Amplifier", Amplifier).Set("Duration", Duration).Set("Ambient", Ambient).Set("ShowParticles", ShowParticles).Set("ShowIcon", ShowIcon);
+            return new NBT().Set("Id", Effect.Id).Set("Amplifier", Amplifier).Set("Duration", Duration).Set("Ambient", Ambient).Set("ShowParticles", ShowParticles).Set("ShowIcon", ShowIcon);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace MCFunctionAPI.Advancements
             NBT nbt = new NBT();
             foreach (KeyValuePair<Effect,EffectCondition> e in Effects)
             {
-                nbt.Set(e.Key.id, e.Value);
+                nbt.Set(e.Key.Id, e.Value);
             }
             return nbt;
         }
@@ -93,7 +93,7 @@ namespace MCFunctionAPI.Advancements
 
         public object ToNBT()
         {
-            return new NBT().Set("biome", Biome).Set("dimension", Dimension?.id).Set("feature", Feature);
+            return new NBT().Set("biome", Biome).Set("dimension", Dimension?.Id).Set("feature", Feature);
         }
     }
 
@@ -139,7 +139,7 @@ namespace MCFunctionAPI.Advancements
 
         public NBT ToNBT()
         {
-            return new NBT().Set("from", From?.id).Set("to", To?.id);
+            return new NBT().Set("from", From?.Id).Set("to", To?.Id);
         }
     }
 
@@ -150,6 +150,7 @@ namespace MCFunctionAPI.Advancements
         public EnchantmentPredicate[] Enchantments { get; set; }
         public Item Item { get; set; }
         public ResourceLocation Potion { get; set; }
+        public NBT NBT { get; set; }
 
         public ItemCondition Is(Item item)
         {
@@ -163,9 +164,15 @@ namespace MCFunctionAPI.Advancements
             return this;
         }
 
+        public ItemCondition HasNBT(NBT nbt)
+        {
+            NBT = nbt;
+            return this;
+        }
+
         public object ToNBT()
         {
-            NBT nbt = new NBT().Set("count", Count).Set("durability", Durability).Set("item", Item?.Id.ToString()).Set("nbt",Item?.nbt.ToString()).Set("potion", Potion?.ToString()).Set("enchantments",Enchantments);
+            NBT nbt = new NBT().Set("count", Count).Set("durability", Durability).Set("item", Item?.Id.ToString()).Set("nbt",NBT == null ? Item?.nbt.ToString() : NBT.ToString()).Set("potion", Potion?.ToString()).Set("enchantments",Enchantments);
             return nbt;
         }
     }
