@@ -124,6 +124,7 @@
     <Compile Include="ResourceLocation.cs" />
     <Compile Include="ResultCommand.cs" />
     <Compile Include="Scoreboard\ConstScore.cs" />
+    <Compile Include="Scoreboard\Criteria.cs" />
     <Compile Include="Scoreboard\EnumObjective.cs" />
     <Compile Include="Scoreboard\Integers.cs" />
     <Compile Include="Scoreboard\Objective.cs" />

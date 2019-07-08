@@ -72,7 +72,12 @@ namespace MCFunctionAPI
             return new EnchantmentPredicate(this, levels);
         }
 
+        public static implicit operator EnchantmentPredicate(Enchantment e)
+        {
+            return new EnchantmentPredicate(e, "1..");
+        }
     }
+
 
     public class EnchantmentPredicate : INBTSerializable
     {
@@ -88,6 +93,15 @@ namespace MCFunctionAPI
         public object ToNBT()
         {
             return new NBT().Set("enchantment", ench).Set("levels", levels);
+        }
+
+        /// <summary>
+        /// has no effect.
+        /// </summary>
+        /// <returns></returns>
+        public EnchantmentPredicate ToPredicate()
+        {
+            return this;
         }
     }
 }

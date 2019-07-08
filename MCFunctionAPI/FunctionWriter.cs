@@ -95,31 +95,39 @@ namespace MCFunctionAPI
         public static void CompileRecursive(Type c, string path)
         {
             Console.WriteLine("compiling " + Namespace + ": " + path + " in type " + c);
-            foreach (var f in c.GetRuntimeFields())
+            object instance = Activator.CreateInstance(c);
+            foreach (var f in c.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
             {
                 if (typeof(Objective) == f.FieldType)
                 {
-                    Namespace.AddLoadObjective((Objective)f.GetValue(null),f.GetCustomAttribute<Criteria>()?.Name);
+                    Objective value = f.GetValue(instance) as Objective;
+                    if (value == null)
+                    {
+                        value = Objective.Of(f.Name);
+                        f.SetValue(instance, value);
+                    }
+                    Namespace.AddLoadObjective(value,f.GetCustomAttribute<Criterion>()?.Name);
                 }
             }
-            foreach (var m in c.GetMethods())
+            
+            foreach (var m in c.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
             {
                 if (m.DeclaringType == c || (m.IsVirtual && typeof(FunctionContainer).IsAssignableFrom(m.DeclaringType)))
                 {
                     if (m.GetParameters().Count() == 0 || m.GetCustomAttribute<Expand>() != null)
                     {
-                        Compile(m, path);
+                        Compile(instance, m, path);
                     }
                 }
             }
 
-            foreach (var t in c.GetNestedTypes())
+            foreach (var t in c.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
             {
                 CompileRecursive(t,path + Utils.LowerCase(t.Name) + "/");
             }
         }
 
-        public static void Compile(MethodInfo m, string path)
+        public static void Compile(object instance, MethodInfo m, string path)
         {
             Console.WriteLine("Compiling method " + m.DeclaringType + " " + m);
             Expand e = m.GetCustomAttribute<Expand>();
@@ -217,8 +225,7 @@ namespace MCFunctionAPI
             Write("#################################################");
             Write("");
 
-            
-            object returnValue = m.Invoke(null, null);
+            object returnValue = m.Invoke(instance, null);
 
             GiveItem give = m.GetCustomAttribute<GiveItem>();
             if (give != null && returnValue != null)

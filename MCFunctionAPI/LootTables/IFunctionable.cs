@@ -91,6 +91,11 @@
             return this as This;
         }
 
+        public This SetCount(int min, int max)
+        {
+            return SetCount(IntRange.Between(min, max));
+        }
+
         public This SetDamage(IntRange damage)
         {
             AddFunction(LootFunction.SetDamage(damage));

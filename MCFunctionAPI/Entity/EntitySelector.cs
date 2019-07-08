@@ -10,7 +10,7 @@ using static MCFunctionAPI.CommandWrapper;
 
 namespace MCFunctionAPI.Entity
 {
-    public class EntitySelector : Entities
+    public class EntitySelector : Entities, IExecutable
     {
 
         private Target target;
@@ -212,22 +212,37 @@ namespace MCFunctionAPI.Entity
 
         public EntitySelector IsSleeping()
         {
-            if (NBT == null)
-            {
-                NBT = new NBT();
-            }
-            NBT.Set("SleepTimer", 0);
+            NotSleeping();
             NegateNBT = true;
             return this;
         }
 
         public EntitySelector NotSleeping()
         {
+            if (!CanTargetPlayers()) return this;
             if (NBT == null)
             {
                 NBT = new NBT();
             }
             NBT.Set("SleepTimer", 0);
+            return this;
+        }
+
+        public EntitySelector PlayerHolding(Item item)
+        {
+            if (!CanTargetPlayers()) return this;
+            if (NBT == null)
+            {
+                NBT = new NBT();
+            }
+            NBT.Set("SelectedItem", item);
+            return this;
+        }
+
+        public EntitySelector PlayerNotHolding(Item item)
+        {
+            PlayerHolding(item);
+            NegateNBT = true;
             return this;
         }
 
@@ -238,13 +253,9 @@ namespace MCFunctionAPI.Entity
 
         public bool CanTargetPlayers()
         {
-            if (Type.not.Contains("player"))
-            {
-                return false;
-            } else if (Type.Type != EntityType.Player)
-            {
-                return false;
-            }
+            if (target.IsOnlyPlayers) return true;
+            if (Type.not.Contains("player")) return false;
+            else if (Type.Type != EntityType.Player) return false;
             return true;
         }
 
@@ -340,6 +351,20 @@ namespace MCFunctionAPI.Entity
             }
         }
 
+        public void RunAbstractFunction(object instance, Function func)
+        {
+            Execute.RunAbstractFunction(instance, func);
+        }
+
+        public void Run(Action<Entities> action)
+        {
+            Execute.Run(action);
+        }
+
+        public void RunAll(Action<Entities> execution)
+        {
+            Execute.RunAll(execution);
+        }
 
         public static implicit operator string(EntitySelector selector)
         {
@@ -852,6 +877,14 @@ namespace MCFunctionAPI.Entity
         private static string[] valid;
 
         private string sign;
+
+        public bool IsOnlyPlayers
+        {
+            get
+            {
+                return this == AllPlayers || this == ClosestPlayer;
+            }
+        }
 
         private Target(string sign)
         {

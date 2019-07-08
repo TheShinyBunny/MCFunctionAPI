@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace MCFunctionAPI.Tags
 {
-    public abstract class Tag<T> : ITaggable where T : ITaggable
+    public abstract class Tag<T> : ITaggable, IEnumerable<T> where T : ITaggable
     {
         private DirectoryInfo folder;
 
         public abstract string FolderName { get; }
-        private List<T> Values;
+        public List<T> Values { get; }
 
         public Tag(ResourceLocation id)
         {
@@ -41,6 +42,24 @@ namespace MCFunctionAPI.Tags
         public override string ToString()
         {
             return "#" + Id;
+        }
+
+        public void ForEach(Action<T> action)
+        {
+            foreach (T t in Values)
+            {
+                action(t);
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

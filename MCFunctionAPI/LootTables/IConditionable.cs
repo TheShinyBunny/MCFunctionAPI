@@ -114,6 +114,12 @@ namespace MCFunctionAPI.LootTables
             return this as This;
         }
 
+        public This Unless(Condition cond)
+        {
+            AddCondition(Condition.Inverted(cond));
+            return this as This;
+        }
+
         public abstract void AddCondition(Condition c);
 
     }

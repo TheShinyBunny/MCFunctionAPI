@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace MCFunctionAPI
 {
 
     /// <summary>
-    /// The Datapack class is used to define and create your datapack.
+    /// An abstract class used to initialize a new datapack. extend and override the methods <see cref="GetName"/> and <see cref="GetDescription"/>.
     /// </summary>
     /// <example>
     /// Datapack basic definition:
@@ -31,9 +32,14 @@ namespace MCFunctionAPI
     public abstract class Datapack
     {
 
-        private Namespace DefaultNamespace;
+        private Namespace MinecraftNamespace;
         private FunctionTag TickTag;
         private FunctionTag LoadTag;
+
+        /// <summary>
+        /// The default namespace used for this datapack. Assigned using the constructor <see cref="Datapack(string)"/>
+        /// </summary>
+        public Namespace Namespace { get; }
 
         /// <summary>
         /// The folder contains the namespaces of this Datapack
@@ -41,11 +47,58 @@ namespace MCFunctionAPI
         public DirectoryInfo DataFolder { get; }
         
 
+        /// <summary>
+        /// Creates a new datapack in the bin/out/ directory with a pack.mcmeta file, using the abstract methods.
+        /// </summary>
         public Datapack()
         {
             DataFolder = Directory.CreateDirectory("out/" + GetName() + "/data");
             File.WriteAllText("out/" + GetName() + "/pack.mcmeta", 
                 new NBT().Set("pack", new NBT().Set("description", GetDescription()).Set("pack_format", 1)).ToString(true, true));
+
+            PreInit();
+        }
+
+        /// <summary>
+        /// Creates a new datapack in the bin/out/ directory with a pack.mcmeta file and a namespace for the datapack's resources.
+        /// </summary>
+        /// <param name="mainNamespace">The default namespace to add resources to. Used to add suclasses of <see cref="FunctionContainer"/>s.</param>
+        public Datapack(string mainNamespace) : this()
+        {
+            Namespace = CreateNamespace(mainNamespace);
+            Init();
+            foreach (Type t in this.GetType().GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
+            {
+                if (t.IsSubclassOf(typeof(FunctionContainer)))
+                {
+                    Namespace.AddFunctions(t);
+                }
+            }
+            PostInit();
+        }
+
+        /// <summary>
+        /// Called right after the pack.mcmeta file is generated.
+        /// </summary>
+        protected virtual void PreInit()
+        {
+
+        }
+
+        /// <summary>
+        /// Called right after the default namespace is created. (only when using constructor <see cref="Datapack(string)"/>)
+        /// </summary>
+        protected virtual void Init()
+        {
+
+        }
+
+        /// <summary>
+        /// Called after the nested function containers has been compiled. (only when using constructor <see cref="Datapack(string)"/>)
+        /// </summary>
+        protected virtual void PostInit()
+        {
+
         }
 
         /// <summary>
@@ -75,8 +128,8 @@ namespace MCFunctionAPI
             {
                 if (LoadTag == null)
                 {
-                    EnsureDefaultNamespace();
-                    LoadTag = new FunctionTag(new ResourceLocation(DefaultNamespace, "load"));
+                    EnsureMCNamespace();
+                    LoadTag = new FunctionTag(new ResourceLocation(MinecraftNamespace, "load"));
                 }
                 LoadTag.Add(function);
             }
@@ -93,17 +146,17 @@ namespace MCFunctionAPI
         {
             if (TickTag == null)
             {
-                EnsureDefaultNamespace();
-                TickTag = new FunctionTag(new ResourceLocation(DefaultNamespace, "tick"));
+                EnsureMCNamespace();
+                TickTag = new FunctionTag(new ResourceLocation(MinecraftNamespace, "tick"));
             }
             TickTag.Add(function);
         }
 
-        private void EnsureDefaultNamespace()
+        private void EnsureMCNamespace()
         {
-            if (DefaultNamespace == null)
+            if (MinecraftNamespace == null)
             {
-                DefaultNamespace = new Namespace(this, "minecraft");
+                MinecraftNamespace = new Namespace(this, "minecraft");
             }
         }
 
@@ -114,8 +167,8 @@ namespace MCFunctionAPI
         /// <param name="table">The loot table to use</param>
         public void AddVanillaLootTable(LootTable table)
         {
-            EnsureDefaultNamespace();
-            DefaultNamespace.AddLootTable(table);
+            EnsureMCNamespace();
+            MinecraftNamespace.AddLootTable(table);
         }
     }
 }

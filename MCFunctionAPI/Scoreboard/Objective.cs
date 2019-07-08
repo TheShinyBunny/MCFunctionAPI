@@ -37,6 +37,16 @@ namespace MCFunctionAPI.Scoreboard
             return new ScoreRange(o, new IntRange(num + 1, null));
         }
 
+        public static ScoreRange operator ==(Objective o, int num)
+        {
+            return new ScoreRange(o, new IntRange(num));
+        }
+
+        public static ScoreRange operator !=(Objective o, int num)
+        {
+            throw new Exception("Cannot use operator != between an objective and an integer.");
+        }
+
         public void Create(string criterion)
         {
             FunctionWriter.Write($"scoreboard objectives add {this} {criterion}");

@@ -78,5 +78,10 @@ namespace MCFunctionAPI
         {
             return exact == null ? (object)new NBT().Set("min", min).Set("max", max) : exact;
         }
+
+        public static IntRange Between(int min, int max)
+        {
+            return new IntRange(min, max);
+        }
     }
 }

@@ -90,7 +90,7 @@ namespace MCFunctionAPI.Scoreboard
             FunctionWriter.Write($"scoreboard players operation {s.target} {s.objective} > {s2.target} {s2.objective}");
             return s;
         }
-
+        
         public void Swap(Score other)
         {
             FunctionWriter.Write($"scoreboard players operation {target} {objective} >< {other.target} {other.objective}");

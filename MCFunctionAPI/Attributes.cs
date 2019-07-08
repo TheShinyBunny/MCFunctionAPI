@@ -91,11 +91,11 @@ namespace MCFunctionAPI
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    public class Criteria : Attribute
+    public class Criterion : Attribute
     {
         public string Name { get; }
 
-        public Criteria(string name)
+        public Criterion(string name)
         {
             Name = name;
         }

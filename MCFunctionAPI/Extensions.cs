@@ -34,7 +34,7 @@ namespace MCFunctionAPI
                 case string v:
                 default:
                     return "\"" + obj + "\"";
-                case IEnumerable c:
+                case ICollection c:
                     return $"[{string.Join(",", from item in c.Cast<object>() select item.ToNBTString(json,prettyPrint))}]";
                 case int i:
                     return obj.ToString();

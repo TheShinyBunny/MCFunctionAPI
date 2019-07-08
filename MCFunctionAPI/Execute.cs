@@ -20,16 +20,26 @@ namespace MCFunctionAPI
     /// <example>
     /// <c>new Execute().As(EntitySelector.AllPlayers).Run.Say("Hello!");</c>
     /// </example>
-    public class Execute
+    public class Execute : IExecutable
     {
 
         private string str = "";
         
         private readonly EntitySelector @as;
+        public bool UseOnce { get; internal set; }
 
         public Execute()
         {
 
+        }
+
+        /// <summary>
+        /// Initializes an execute builder, starting with '/execute as &lt;<paramref name="as"/>&gt;'.
+        /// </summary>
+        /// <param name="as">The EntitySelector for /execute as &lt;selector&gt;</param>
+        public Execute(EntitySelector @as)
+        {
+            this.@as = @as;
         }
 
         /// <summary>
@@ -63,17 +73,6 @@ namespace MCFunctionAPI
         public void Run(Action<Entities> action)
         {
             action(Run());
-        }
-
-        public bool UseOnce { get; private set; }
-
-        /// <summary>
-        /// Initializes an execute builder, starting with '/execute as &lt;<paramref name="as"/>&gt;'.
-        /// </summary>
-        /// <param name="as">The EntitySelector for /execute as &lt;selector&gt;</param>
-        public Execute(EntitySelector @as)
-        {
-            this.@as = @as;
         }
 
         /// <summary>
@@ -346,6 +345,27 @@ namespace MCFunctionAPI
             }
             return "execute " + str;
         }
+
+        public IExecutable Chain(params Execute[] executes)
+        {
+            foreach (Execute e in executes)
+            {
+                e.UseOnce = true;
+                FunctionWriter.Execute.Push(e);
+            }
+            return new EmptyExecutable();
+        }
+
+        public static IExecutable ChainEach<T>(IEnumerable<T> items, Func<T,Execute> executeFunc)
+        {
+            foreach (T t in items)
+            {
+                Execute e = executeFunc(t);
+                e.UseOnce = true;
+                FunctionWriter.Execute.Push(e);
+            }
+            return new EmptyExecutable();
+        }
     }
 
     public class DataType : EnumBase
@@ -402,5 +422,47 @@ namespace MCFunctionAPI
             return id;
         }
     }
-    
+
+    public interface IExecutable
+    {
+        void RunFunction(Function func);
+
+        void RunAbstractFunction(object instance, Function func);
+
+        void Run(Action<Entities> action);
+
+        /// <summary>
+        /// Runs all actions done inside the <paramref name="execution"/> delegate using this Execute builder.
+        /// </summary>
+        /// <param name="execution">The delegate to take all commands from</param>
+        void RunAll(Action<Entities> execution);
+
+        
+    }
+
+    class EmptyExecutable : IExecutable
+    {
+        public void Run(Action<Entities> action)
+        {
+            action(new Entities());
+        }
+
+        public void RunAbstractFunction(object instance, Function func)
+        {
+            CommandWrapper.RunAbstractFunction(instance, func);
+        }
+
+        public void RunAll(Action<Entities> execution)
+        {
+            FunctionWriter.Execute.Peek().UseOnce = false;
+            execution(new Entities());
+            FunctionWriter.Execute.Clear();
+        }
+
+        public void RunFunction(Function func)
+        {
+            CommandWrapper.RunFunction(func);
+        }
+    }
+
 }
